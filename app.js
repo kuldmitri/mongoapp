@@ -38,11 +38,10 @@ app.post("/api/issueBook", jsonParser, function (req, res) {
 });
 
 
-
 app.post("/api/returnBook", jsonParser, function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var id = new objectId(req.body.id);
-        mongoClient.connect(url, function (err, db) {
+    mongoClient.connect(url, function (err, db) {
         db.collection("books").findOneAndUpdate({_id: id}, {$set: {issued: null, issuedto: null}},
             {returnOriginal: false}, function (err, result) {
                 if (err) return res.status(400).send();
@@ -55,17 +54,15 @@ app.post("/api/returnBook", jsonParser, function (req, res) {
 });
 
 app.post("/api/findBooks", jsonParser, function (req, res) {
-    var id = new objectId(req.body.id);
+    var name = req.body.name;
+    var author = req.body.author;
+    console.log('findBooks ' + name + ' ' + author);
     mongoClient.connect(url, function (err, db) {
-        db.collection("books").findOneAndUpdate({_id: id}, {$set: {age: userAge, name: userName}},
-            {returnOriginal: false}, function (err, result) {
-
-                if (err) return res.status(400).send();
-
-                var book = result.value;
-                res.send(book);
-                db.close();
-            });
+        db.collection("books").find({name: name}).toArray(function (err, books) {
+            res.send(books);
+            console.log(books);
+            db.close();
+        });
     });
 });
 
@@ -89,20 +86,6 @@ app.post("/api/books/", jsonParser, function (req, res) {
     });
 });
 
-app.delete("/api/books/:id", function (req, res) {
-
-    var id = new objectId(req.params.id);
-    mongoClient.connect(url, function (err, db) {
-        db.collection("books").findOneAndDelete({_id: id}, function (err, result) {
-
-            if (err) return res.status(400).send();
-
-            var book = result.value;
-            res.send(book);
-            db.close();
-        });
-    });
-});
 
 app.put("/api/books", jsonParser, function (req, res) {
 
@@ -121,6 +104,23 @@ app.put("/api/books", jsonParser, function (req, res) {
                 res.send(book);
                 db.close();
             });
+    });
+});
+
+app.post("/api/deleteBook", jsonParser, function (req, res) {
+
+    if (!req.body) return res.sendStatus(400);
+    var id = new objectId(req.body.id);
+
+    mongoClient.connect(url, function (err, db) {
+        db.collection("books").findOneAndDelete({_id: id}, function (err, result) {
+
+            if (err) return res.status(400).send();
+
+            var book = result.value;
+            res.send(book);
+            db.close();
+        });
     });
 });
 

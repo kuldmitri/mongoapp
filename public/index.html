@@ -17,10 +17,6 @@
         <label for="author">Автор:</label>
         <input class="form-control" name="author"/>
     </div>
-    <div class="form-group">
-        <label for="bookId">Индекс:</label>
-        <input class="form-control" name="bookId"/>
-    </div>
     <div class="panel-body">
         <a id="Create" class="btn btn-sm btn-primary">Добавить книгу</a>
         <a id="Find" class="btn btn-sm btn-primary">Найти книги</a>
@@ -39,7 +35,7 @@
             contentType: "application/json",
             success: function (books) {
                 $("#baza").html(booksToHtml(books));
-            },
+            }
         });
     });
 
@@ -63,22 +59,33 @@
     $("#Find").click(function (e) {
         //  e.preventDefault();
         var form = document.forms["findBooks"];
-        var id = form.elements["bookId"].value;
+        var name = form.elements["bookName"].value;
+        var author = form.elements["author"].value;
+        console.log(name + ' ' + author);
+
         $.ajax({
             url: "api/findBooks",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
-                id: id
-            })
+                name: name,
+                author: author
+            }),
+            success: function (books) {
+                $("#baza").html(booksToHtml(books));
+            }
         });
     });
 
     var bookToHtml = function (book) {
         if (!book.issued) return '<div>' + ' ' + book.author + ' "' + book.name + '"         ' +
-            '<a class="issueLink" id="' + book._id + '">Выдать книгу</a>' + '</div>';
-        return '<div>' + ' ' + book.author + ' "' + book.name + ' Выдана абоненту ' + book.issuedto + ' в ' + book.issued +
-            ' <a class="returnLink" id=' + book._id + '> Вернуть книгу</a>' + '</div>';
+            '<a class="issueLink" id="' + book._id + '">Выдать  </a>' +
+            '<a class="deleteLink" id="' + book._id + '">  Удалить </a>' +
+            '</div>';
+        return '<div>' + ' ' + book.author + ' "' + book.name + '" Выдана абоненту ' + book.issuedto + ' в ' + book.issued +
+            ' <a class="returnLink" id=' + book._id + '> Вернуть  </a>' +
+            '<a class="deleteLink" id="' + book._id + '">  Удалить </a>' +
+            '</div>';
 
     };
 
@@ -98,7 +105,7 @@
             data: JSON.stringify({
                 id: id,
                 abonent: abonent
-            }),
+            })
         })
     }
 
@@ -114,17 +121,38 @@
         $('#All').triggerHandler('click');
     }
 
+    function deleteBook(id) {
+        $.ajax({
+            url: "api/deleteBook",
+            contentType: "application/json",
+            method: "POST",
+            data: JSON.stringify({
+                id: id
+            })
+        });
+        $('#All').triggerHandler('click');
+    }
+
+
+
     $("body").on("click", ".issueLink", function () {
         var id = this.id;
         var abonent = prompt('Введите имя абонента, которому будет выдана книга', '');
         if (abonent) issueBook(id, abonent);
         $('#All').triggerHandler('click');
-    })
+    });
 
     $("body").on("click", ".returnLink", function () {
         var id = this.id;
         returnBook(id);
-    })
+    });
+
+    $("body").on("click", ".deleteLink", function () {
+        var id = this.id;
+        deleteBook(id);
+    });
+
+
     $('#All').triggerHandler('click');
 </script>
 </body>
