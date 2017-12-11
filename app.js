@@ -70,7 +70,6 @@ app.post("/api/books/", jsonParser, function (req, res) {
 
     if (!req.body) return res.sendStatus(400);
     var book = {};
-    var date = new Date();
     console.log(req.body);
     book.author = req.body.author;
     book.name = req.body.name;
@@ -80,7 +79,7 @@ app.post("/api/books/", jsonParser, function (req, res) {
     mongoClient.connect(url, function (err, db) {
         db.collection("book").insertOne(book, function (err, result) {
             if (err) return res.status(400).send();
-            res.send(book);
+            res.send(result.value);
             db.close();
         });
     });
