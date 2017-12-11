@@ -1,159 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Список пользователей</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+    <meta charset="utf-8">
+    <title>Library</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 </head>
 <body>
-<h2>Список пользователей</h2>
-<form name="userForm">
-    <input type="hidden" name="id" value="0" />
+
+<form name="findBooks">
+    <input type="hidden" name="id" value="0"/>
     <div class="form-group">
-        <label for="name">Имя:</label>
-        <input class="form-control" name="name" />
+        <label for="name">Название книги:</label>
+        <input class="form-control" name="bookName"/>
     </div>
     <div class="form-group">
-        <label for="age">Возраст:</label>
-        <input class="form-control" name="age" />
+        <label for="author">Автор:</label>
+        <input class="form-control" name="author"/>
     </div>
     <div class="panel-body">
-        <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
-        <a id="reset" class="btn btn-sm btn-primary">Сбросить</a>
+        <a id="Create" class="btn btn-sm btn-primary">Добавить книгу</a>
+        <a id="Find" class="btn btn-sm btn-primary">Найти книги</a>
     </div>
 </form>
-<table class="table table-condensed table-striped table-bordered">
-    <thead><tr><th>Id</th><th>Имя</th><th>возраст</th><th></th></tr></thead>
-    <tbody>
-    </tbody>
-</table>
+
+<h2>books</h2>
+<a id="All" class="btn btn-sm btn-primary">Show Library</a>
+<div id="baza"></div>
 
 <script>
-    // Получение всех пользователей
-    function GetUsers() {
+    $("#All").click(function (e) {
+        var rows = "";
         $.ajax({
-            url: "/api/users",
+            url: "/api/books",
             type: "GET",
             contentType: "application/json",
-            success: function (users) {
-                var rows = "";
-                $.each(users, function (index, user) {
-                    // добавляем полученные элементы в таблицу
-                    rows += row(user);
-                })
-                $("table tbody").append(rows);
-            }
+            success: function (books) {
+                for (var i = 0; i < books.length; i++) {
+                    rows = rows + row(books[i]);
+                }
+                $("#baza").html(rows);
+            },
         });
-    }
-    // Получение одного пользователя
-    function GetUser(id) {
+    });
+
+    $("#Create").click(function (e) {
+      //  e.preventDefault();
+        var form = document.forms["findBooks"];
+        var name = form.elements["bookName"].value;
+        var author = form.elements["author"].value;
         $.ajax({
-            url: "/api/users/"+id,
-            type: "GET",
-            contentType: "application/json",
-            success: function (user) {
-                var form = document.forms["userForm"];
-                form.elements["id"].value = user._id;
-                form.elements["name"].value = user.name;
-                form.elements["age"].value = user.age;
-            }
-        });
-    }
-    // Добавление пользователя
-    function CreateUser(userName, userAge) {
-        $.ajax({
-            url: "api/users",
+            url: "api/books",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
-                name: userName,
-                age: userAge
+                name: name,
+                author: author
             }),
-            success: function (user) {
-                reset();
-                $("table tbody").append(row(user));
-            }
         })
-    }
-    // Изменение пользователя
-    function EditUser(userId, userName, userAge) {
-        $.ajax({
-            url: "api/users",
-            contentType: "application/json",
-            method: "PUT",
-            data: JSON.stringify({
-                id: userId,
-                name: userName,
-                age: userAge
-            }),
-            success: function (user) {
-                reset();
-                console.log(user);
-                $("tr[data-rowid='" + user._id + "']").replaceWith(row(user));
-            }
-        })
-    }
-
-    // сброс формы
-    function reset() {
-        var form = document.forms["userForm"];
-        form.reset();
-        form.elements["id"].value = 0;
-    }
-
-    // Удаление пользователя
-    function DeleteUser(id) {
-        $.ajax({
-            url: "api/users/"+id,
-            contentType: "application/json",
-            method: "DELETE",
-            success: function (user) {
-                console.log(user);
-                $("tr[data-rowid='" + user._id + "']").remove();
-            }
-        })
-    }
-    // создание строки для таблицы
-    var row = function (user) {
-        return "<tr data-rowid='" + user._id + "'><td>" + user._id + "</td>" +
-            "<td>" + user.name + "</td> <td>" + user.age + "</td>" +
-            "<td><a class='editLink' data-id='" + user._id + "'>Изменить</a> | " +
-            "<a class='removeLink' data-id='" + user._id + "'>Удалить</a></td></tr>";
-    }
-    // сброс значений формы
-    $("#reset").click(function (e) {
-
-        e.preventDefault();
-        reset();
-    })
-
-    // отправка формы
-    $("form").submit(function (e) {
-        e.preventDefault();
-        var id = this.elements["id"].value;
-        var name = this.elements["name"].value;
-        var age = this.elements["age"].value;
-        if (id == 0)
-            CreateUser(name, age);
-        else
-            EditUser(id, name, age);
     });
 
-    // нажимаем на ссылку Изменить
-    $("body").on("click", ".editLink", function () {
-        var id = $(this).data("id");
-        GetUser(id);
-    })
-    // нажимаем на ссылку Удалить
-    $("body").on("click", ".removeLink", function () {
-        var id = $(this).data("id");
-        DeleteUser(id);
-    })
 
-    // загрузка пользователей
-    GetUsers();
+    var row = function (book) {
+        return '<div>' + book._id + ' ' + book.name + ' ' + book.author + ' ' +
+            book.isued + ' ' + book.isuedto + '</div>'+'<a class="editLink" data-id=' + book._id +'>Изменить</a>';
+    };
+
 </script>
 </body>
 </html>

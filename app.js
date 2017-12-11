@@ -8,11 +8,11 @@ var jsonParser = bodyParser.json();
 var url = "mongodb://localhost:27017/usersdb";
 
 app.use(express.static(__dirname + "/public"));
-app.get("/api/users", function(req, res){
+app.get("/api/books", function(req, res){
 
     mongoClient.connect(url, function(err, db){
-        db.collection("users").find({}).toArray(function(err, users){
-            res.send(users)
+        db.collection("books").find({}).toArray(function(err, books){
+            res.send(books)
             db.close();
         });
     });
@@ -31,49 +31,50 @@ app.get("/api/users/:id", function(req, res){
     });
 });
 
-app.post("/api/users", jsonParser, function (req, res) {
+app.post("/api/books/", jsonParser, function (req, res) {
 
     if(!req.body) return res.sendStatus(400);
-
-    var userName = req.body.name;
-    var userAge = req.body.age;
-    var user = {name: userName, age: userAge};
+    var book ={};
+    var date = new Date();
+    console.log(req.body);
+    book.author = req.body.author;
+    book.name = req.body.name;
+    book.isuedto = req.body.abonent;
+    book.isued = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
 
     mongoClient.connect(url, function(err, db){
-        db.collection("users").insertOne(user, function(err, result){
-
+        db.collection("books").insertOne(book, function(err, result){
             if(err) return res.status(400).send();
-
-            res.send(user);
+            res.send(book);
             db.close();
         });
     });
 });
 
-app.delete("/api/users/:id", function(req, res){
+app.delete("/api/books/:id", function(req, res){
 
     var id = new objectId(req.params.id);
     mongoClient.connect(url, function(err, db){
-        db.collection("users").findOneAndDelete({_id: id}, function(err, result){
+        db.collection("books").findOneAndDelete({_id: id}, function(err, result){
 
             if(err) return res.status(400).send();
 
-            var user = result.value;
-            res.send(user);
+            var book = result.value;
+            res.send(book);
             db.close();
         });
     });
 });
 
-app.put("/api/users", jsonParser, function(req, res){
+app.put("/api/books", jsonParser, function(req, res){
 
     if(!req.body) return res.sendStatus(400);
     var id = new objectId(req.body.id);
-    var userName = req.body.name;
-    var userAge = req.body.age;
+    var bookName = req.body.name;
+    var bookAuthor = req.body.author;
 
     mongoClient.connect(url, function(err, db){
-        db.collection("users").findOneAndUpdate({_id: id}, { $set: {age: userAge, name: userName}},
+        db.collection("users").findOneAndUpdate({_id: id}, { $set: {author: bookAuthor, name: bookName}},
             {returnOriginal: false },function(err, result){
 
                 if(err) return res.status(400).send();
