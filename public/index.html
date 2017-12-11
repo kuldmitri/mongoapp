@@ -18,6 +18,10 @@
         <label for="author">Автор:</label>
         <input class="form-control" name="author"/>
     </div>
+    <div class="form-group">
+        <label for="bookId">Индекс:</label>
+        <input class="form-control" name="bookId"/>
+    </div>
     <div class="panel-body">
         <a id="Create" class="btn btn-sm btn-primary">Добавить книгу</a>
         <a id="Find" class="btn btn-sm btn-primary">Найти книги</a>
@@ -30,22 +34,18 @@
 
 <script>
     $("#All").click(function (e) {
-        var rows = "";
         $.ajax({
             url: "/api/books",
             type: "GET",
             contentType: "application/json",
             success: function (books) {
-                for (var i = 0; i < books.length; i++) {
-                    rows = rows + row(books[i]);
-                }
-                $("#baza").html(rows);
+                $("#baza").html(booksToHtml(books));
             },
         });
     });
 
     $("#Create").click(function (e) {
-      //  e.preventDefault();
+        //  e.preventDefault();
         var form = document.forms["findBooks"];
         var name = form.elements["bookName"].value;
         var author = form.elements["author"].value;
@@ -56,15 +56,67 @@
             data: JSON.stringify({
                 name: name,
                 author: author
-            }),
-        })
+            })
+        });
+        $('#All').triggerHandler('click');
     });
 
+    $("#Find").click(function (e) {
+        //  e.preventDefault();
+        var form = document.forms["findBooks"];
+        var id = form.elements["bookId"].value;
+        $.ajax({
+            url: "api/findBooks",
+            contentType: "application/json",
+            method: "POST",
+            data: JSON.stringify({
+                id: id
+            })
+        });
+    });
 
-    var row = function (book) {
-        return '<div>' + book._id + ' ' + book.name + ' ' + book.author + ' ' +
-            book.isued + ' ' + book.isuedto + '</div>'+'<a class="editLink" data-id=' + book._id +'>Изменить</a>';
+    var bookToHtml = function (book) {
+        if (!book.issued) return '<div>' + ' ' + book.author + ' "' + book.name + '"         ' +
+            '<a class="issueLink" id="' + book._id + '">Выдать книгу</a>' + '</div>';
+        return '<div>' +  ' ' + book.author + ' "' + book.name + ' Выдана абоненту ' + book.issuedto + ' в ' + book.issued +
+            ' <a class="returnLink" id=' + book._id + '> Вернуть книгу</a>' + '</div>';
+
     };
+
+    var booksToHtml = function (books) {
+        var rows = "";
+        for (var i = 0; i < books.length; i++) {
+            rows = rows + bookToHtml(books[i]);
+        }
+        return rows;
+    }
+
+    function issueBook(id, abonent) {
+        $.ajax({
+            url: "api/issueBook",
+            contentType: "application/json",
+            method: "POST",
+            data: JSON.stringify({
+                id: id,
+                abonent: abonent
+            }),
+            success: function (book) {
+                alert('Книга ' + book.author + ' "' + book.name + '" Выдана абоненту ' + book.issuedto + ' в ' + book.issued);
+            }
+        })
+    }
+
+    $("body").on("click", ".issueLink", function () {
+        var id = this.id;
+        var abonent = prompt('Введите имя абонента, которому будет выдана книга', '');
+        if (abonent) issueBook(id, abonent);
+        $('#All').triggerHandler('click', handler);
+    })
+
+    $("body").on("click", ".returnLink", function () {
+        var id = $(this).data("id");
+        DeleteUser(id);
+    })
 
 </script>
 </body>
