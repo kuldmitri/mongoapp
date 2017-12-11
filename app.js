@@ -11,8 +11,8 @@ app.use(express.static(__dirname + "/public"));
 app.get("/api/books", function (req, res) {
 
     mongoClient.connect(url, function (err, db) {
-        db.collection("books").find({}).toArray(function (err, books) {
-            res.send(books)
+        db.collection("book").find({}).toArray(function (err, books) {
+            res.send(books);
             db.close();
         });
     });
@@ -26,7 +26,7 @@ app.post("/api/issueBook", jsonParser, function (req, res) {
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 
     mongoClient.connect(url, function (err, db) {
-        db.collection("books").findOneAndUpdate({_id: id}, {$set: {issued: date, issuedto: abonent}},
+        db.collection("book").findOneAndUpdate({_id: id}, {$set: {issued: date, issuedto: abonent}},
             {returnOriginal: false}, function (err, result) {
                 if (err) return res.status(400).send();
                 var book = result.value;
@@ -42,7 +42,7 @@ app.post("/api/returnBook", jsonParser, function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var id = new objectId(req.body.id);
     mongoClient.connect(url, function (err, db) {
-        db.collection("books").findOneAndUpdate({_id: id}, {$set: {issued: null, issuedto: null}},
+        db.collection("book").findOneAndUpdate({_id: id}, {$set: {issued: null, issuedto: null}},
             {returnOriginal: false}, function (err, result) {
                 if (err) return res.status(400).send();
                 var book = result.value;
@@ -58,7 +58,7 @@ app.post("/api/findBooks", jsonParser, function (req, res) {
     var author = req.body.author;
     console.log('findBooks ' + name + ' ' + author);
     mongoClient.connect(url, function (err, db) {
-        db.collection("books").find({name: name}).toArray(function (err, books) {
+        db.collection("book").find({name: name}).toArray(function (err, books) {
             res.send(books);
             console.log(books);
             db.close();
@@ -78,32 +78,11 @@ app.post("/api/books/", jsonParser, function (req, res) {
     book.issued = req.body.issued;
 
     mongoClient.connect(url, function (err, db) {
-        db.collection("books").insertOne(book, function (err, result) {
+        db.collection("book").insertOne(book, function (err, result) {
             if (err) return res.status(400).send();
             res.send(book);
             db.close();
         });
-    });
-});
-
-
-app.put("/api/books", jsonParser, function (req, res) {
-
-    if (!req.body) return res.sendStatus(400);
-    var id = new objectId(req.body.id);
-    var bookName = req.body.name;
-    var bookAuthor = req.body.author;
-
-    mongoClient.connect(url, function (err, db) {
-        db.collection("users").findOneAndUpdate({_id: id}, {$set: {author: bookAuthor, name: bookName}},
-            {returnOriginal: false}, function (err, result) {
-
-                if (err) return res.status(400).send();
-
-                var book = result.value;
-                res.send(book);
-                db.close();
-            });
     });
 });
 
@@ -113,7 +92,7 @@ app.post("/api/deleteBook", jsonParser, function (req, res) {
     var id = new objectId(req.body.id);
 
     mongoClient.connect(url, function (err, db) {
-        db.collection("books").findOneAndDelete({_id: id}, function (err, result) {
+        db.collection("book").findOneAndDelete({_id: id}, function (err, result) {
 
             if (err) return res.status(400).send();
 
