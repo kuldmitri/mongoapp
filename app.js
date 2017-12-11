@@ -37,6 +37,23 @@ app.post("/api/issueBook", jsonParser, function (req, res) {
     });
 });
 
+
+
+app.post("/api/returnBook", jsonParser, function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+    var id = new objectId(req.body.id);
+        mongoClient.connect(url, function (err, db) {
+        db.collection("books").findOneAndUpdate({_id: id}, {$set: {issued: null, issuedto: null}},
+            {returnOriginal: false}, function (err, result) {
+                if (err) return res.status(400).send();
+                var book = result.value;
+                console.log(result);
+                res.send(book);
+                db.close();
+            });
+    });
+});
+
 app.post("/api/findBooks", jsonParser, function (req, res) {
     var id = new objectId(req.body.id);
     mongoClient.connect(url, function (err, db) {
@@ -100,8 +117,8 @@ app.put("/api/books", jsonParser, function (req, res) {
 
                 if (err) return res.status(400).send();
 
-                var user = result.value;
-                res.send(user);
+                var book = result.value;
+                res.send(book);
                 db.close();
             });
     });

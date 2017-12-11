@@ -7,7 +7,6 @@
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 </head>
 <body>
-
 <form name="findBooks">
     <input type="hidden" name="id" value="0"/>
     <div class="form-group">
@@ -78,7 +77,7 @@
     var bookToHtml = function (book) {
         if (!book.issued) return '<div>' + ' ' + book.author + ' "' + book.name + '"         ' +
             '<a class="issueLink" id="' + book._id + '">Выдать книгу</a>' + '</div>';
-        return '<div>' +  ' ' + book.author + ' "' + book.name + ' Выдана абоненту ' + book.issuedto + ' в ' + book.issued +
+        return '<div>' + ' ' + book.author + ' "' + book.name + ' Выдана абоненту ' + book.issuedto + ' в ' + book.issued +
             ' <a class="returnLink" id=' + book._id + '> Вернуть книгу</a>' + '</div>';
 
     };
@@ -100,24 +99,33 @@
                 id: id,
                 abonent: abonent
             }),
-            success: function (book) {
-                alert('Книга ' + book.author + ' "' + book.name + '" Выдана абоненту ' + book.issuedto + ' в ' + book.issued);
-            }
         })
+    }
+
+    function returnBook(id, abonent) {
+        $.ajax({
+            url: "api/returnBook",
+            contentType: "application/json",
+            method: "POST",
+            data: JSON.stringify({
+                id: id
+            })
+        });
+        $('#All').triggerHandler('click');
     }
 
     $("body").on("click", ".issueLink", function () {
         var id = this.id;
         var abonent = prompt('Введите имя абонента, которому будет выдана книга', '');
         if (abonent) issueBook(id, abonent);
-        $('#All').triggerHandler('click', handler);
+        $('#All').triggerHandler('click');
     })
 
     $("body").on("click", ".returnLink", function () {
-        var id = $(this).data("id");
-        DeleteUser(id);
+        var id = this.id;
+        returnBook(id);
     })
-
+    $('#All').triggerHandler('click');
 </script>
 </body>
 </html>
