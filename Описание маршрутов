@@ -1,3 +1,0 @@
-get LibraryTraining / books - вывод всей базы книг
-put LibraryTraining / books    author name - добавить книгу в библиотеку
-delete LibraryTraining / books / :id - удалить книгу
