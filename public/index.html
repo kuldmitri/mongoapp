@@ -134,26 +134,29 @@
         $('#All').triggerHandler('click');
     }
 
-    function getIdAbonent(abonent) {
+    var getIdAbonent = function (number) {
+        var id;
         $.ajax({
             url: "gerIdAbonent",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
-                number: abonent
+                number: number
             }),
             success: function (user) {
+                id = user._id;
                 console.log(user);
-                return user
+                return id
             }
         });
-    }
+        //return id;
+    };
 
 
     $("body").on("click", ".issueLink", function () {
         var id = this.id;
-        var abonent = prompt('Введите номер читательского билета абонента, которому будет выдана книга');
-        var user = getIdAbonent(abonent);
+        var number = prompt('Введите номер читательского билета абонента, которому будет выдана книга');
+        var user = getIdAbonent(number);
         console.log(user);
 
         if (user) issueBook(id, number);
