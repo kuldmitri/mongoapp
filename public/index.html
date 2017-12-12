@@ -20,6 +20,7 @@
     <div class="panel-body">
         <a id="Create" class="btn btn-sm btn-primary">Добавить книгу</a>
         <a id="Find" class="btn btn-sm btn-primary">Найти книги</a>
+        <a id="RegisterUser" href="RegisterForm.html" class="btn btn-sm btn-primary">Зарегистрировать абонента</a>
     </div>
 </form>
 
@@ -30,7 +31,7 @@
 <script>
     $("#All").click(function (e) {
         $.ajax({
-            url: "/api/books",
+            url: "/books",
             type: "GET",
             contentType: "application/json",
             success: function (books) {
@@ -45,7 +46,7 @@
         var name = form.elements["bookName"].value;
         var author = form.elements["author"].value;
         $.ajax({
-            url: "api/addBook",
+            url: "addBook",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
@@ -64,7 +65,7 @@
         console.log(name + ' ' + author);
 
         $.ajax({
-            url: "api/findBooks",
+            url: "findBooks",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
@@ -97,21 +98,21 @@
         return rows;
     }
 
-    function issueBook(id, abonent) {
+    function issueBook(id, number) {
         $.ajax({
-            url: "api/issueBook",
+            url: "issueBook",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
                 id: id,
-                abonent: abonent
+                number: number
             })
         })
     }
 
     function returnBook(id) {
         $.ajax({
-            url: "api/returnBook",
+            url: "returnBook",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
@@ -123,7 +124,7 @@
 
     function deleteBook(id) {
         $.ajax({
-            url: "api/deleteBook",
+            url: "deleteBook",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
@@ -133,12 +134,29 @@
         $('#All').triggerHandler('click');
     }
 
+    function getIdAbonent(abonent) {
+        $.ajax({
+            url: "gerIdAbonent",
+            contentType: "application/json",
+            method: "POST",
+            data: JSON.stringify({
+                number: abonent
+            }),
+            success: function (user) {
+                console.log(user);
+                return user
+            }
+        });
+    }
 
 
     $("body").on("click", ".issueLink", function () {
         var id = this.id;
-        var abonent = prompt('Введите имя абонента, которому будет выдана книга', '');
-        if (abonent) issueBook(id, abonent);
+        var abonent = prompt('Введите номер читательского билета абонента, которому будет выдана книга');
+        var user = getIdAbonent(abonent);
+        console.log(user);
+
+        if (user) issueBook(id, number);
         $('#All').triggerHandler('click');
     });
 
@@ -152,8 +170,8 @@
         deleteBook(id);
     });
 
-
     $('#All').triggerHandler('click');
+
 </script>
 </body>
 </html>

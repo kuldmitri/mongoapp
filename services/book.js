@@ -14,12 +14,12 @@ exports.getBooks = function (req, res) {
 exports.issueBook = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var id = new objectId(req.body.id);
-    var abonent = req.body.abonent;
+    var number = req.body.number;
     var date = new Date();
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 
     mongoClient.connect(url, function (err, db) {
-        db.collection("book").findOneAndUpdate({_id: id}, {$set: {issued: date, issuedto: abonent}},
+        db.collection("book").findOneAndUpdate({_id: id}, {$set: {issued: date, issuedto: number}},
             {returnOriginal: false}, function (err, result) {
                 if (err) return res.status(400).send();
                 var book = result.value;

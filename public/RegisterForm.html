@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Library</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+</head>
+<body>
+<form name="RegisterForm">
+    <input type="hidden" name="id" value="0"/>
+    <div class="form-group">
+        <label for="number">Номер читательского билета:</label>
+        <input class="form-control" name="number"/>
+    </div>
+    <div class="form-group">
+        <label for="name">Имя читателя:</label>
+        <input class="form-control" name="name"/>
+    </div>
+    <div class="form-group">
+        <label for="mail">Электронная почта читателя:</label>
+        <input class="form-control" name="mail"/>
+    </div>
+    <div class="panel-body">
+        <a id="Create" class="btn btn-sm btn-primary">Зарегистрировать абонента</a>
+    </div>
+</form>
+
+<h2>users</h2>
+<a href="index.html" class="btn btn-sm btn-primary">Перейти к книгамy</a>
+<a id="ShowUsers" class="btn btn-sm btn-primary">Показать всех зарегистрированныхy</a>
+<div id="baza"></div>
+
+<script>
+    $("#Create").click(function (e) {
+        //  e.preventDefault();
+        var form = document.forms["RegisterForm"];
+        var number = form.elements["number"].value;
+        var name = form.elements["name"].value;
+        var mail = form.elements["mail"].value;
+        $.ajax({
+            url: "addUser",
+            contentType: "application/json",
+            method: "POST",
+            data: JSON.stringify({
+                number: number,
+                name: name,
+                mail: mail
+            })
+        });
+    });
+
+    var userToHtml = function (user) {
+        return '<div>' + user.number + ' ' + user.name + ' ' + user.mail +
+            '<a class="deleteLink" id="' + user._id + '">  Удалить </a>' +
+            '</div>';
+    };
+
+    var usersToHtml = function (users) {
+        var rows = "";
+        for (var i = 0; i < users.length; i++) {
+            rows = rows + userToHtml(users[i]);
+        }
+        return rows;
+    }
+
+
+    $("#ShowUsers").click(function (e) {
+        $.ajax({
+            url: "/users",
+            type: "GET",
+            contentType: "application/json",
+            success: function (users) {
+                $("#baza").html(usersToHtml(users));
+            }
+        });
+    });
+    $("body").on("click", ".deleteLink", function () {
+        var id = this.id;
+        deleteUser(id);
+    });
+
+    function deleteUser(id) {
+        $.ajax({
+            url: "deleteUser",
+            contentType: "application/json",
+            method: "POST",
+            data: JSON.stringify({
+                id: id
+            })
+        });
+        $('#ShowUsers').triggerHandler('click');
+    }
+    $('#ShowUsers').triggerHandler('click');
+
+</script>
+</body>
+</html>
