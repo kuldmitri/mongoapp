@@ -45,7 +45,7 @@
         var name = form.elements["bookName"].value;
         var author = form.elements["author"].value;
         $.ajax({
-            url: "api/books",
+            url: "api/addBook",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
@@ -109,7 +109,7 @@
         })
     }
 
-    function returnBook(id, abonent) {
+    function returnBook(id) {
         $.ajax({
             url: "api/returnBook",
             contentType: "application/json",
