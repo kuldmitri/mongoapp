@@ -6,6 +6,8 @@ var user = require('./services/user.js');
 var app = express();
 var jsonParser = bodyParser.json();
 
+process.env.urlMongodb = "mongodb://localhost:27017/Library";
+
 app.use(express.static(__dirname + "/public"));
 app.get("/books", book.getBooks);
 app.post("/issueBook", jsonParser, book.issueBook);

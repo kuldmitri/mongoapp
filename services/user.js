@@ -1,9 +1,8 @@
 var mongoClient = require("mongodb").MongoClient;
 var objectId = require("mongodb").ObjectID;
-var url = "mongodb://localhost:27017/Library";
 
 exports.getUsers = function (req, res) {
-    mongoClient.connect(url, function (err, db) {
+    mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("user").find({}).toArray(function (err, users) {
             res.send(users);
             db.close();
@@ -19,7 +18,7 @@ exports.addUser = function (req, res) {
     user.name = req.body.name;
     user.mail = req.body.mail;
 
-    mongoClient.connect(url, function (err, db) {
+    mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("user").insertOne(user, function (err, result) {
             if (err) return res.status(400).send();
             res.send(result.value);
@@ -31,7 +30,7 @@ exports.addUser = function (req, res) {
 exports.deleteUser = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var id = new objectId(req.body.id);
-    mongoClient.connect(url, function (err, db) {
+    mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("user").findOneAndDelete({_id: id}, function (err, result) {
             if (err) return res.status(400).send();
             var user = result.value;
@@ -48,7 +47,7 @@ exports.updateUser = function (req, res) {
     user.name = req.body.name;
     user.mail = req.body.abonent;
 
-    mongoClient.connect(url, function (err, db) {
+    mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("user").findOneAndUpdate({_id: id}, {
                 $set: {
                     number: user.number,
@@ -70,7 +69,7 @@ exports.gerIdAbonent = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var number = req.body.number;
 
-    mongoClient.connect(url, function (err, db) {
+    mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("user").findOne({number: number}, function (err, user) {
             res.send(user);
             db.close();

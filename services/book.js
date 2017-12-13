@@ -1,9 +1,8 @@
 var mongoClient = require("mongodb").MongoClient;
 var objectId = require("mongodb").ObjectID;
-var url = "mongodb://localhost:27017/Library";
 
 exports.getBooks = function (req, res) {
-    mongoClient.connect(url, function (err, db) {
+    mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("book").find({}).toArray(function (err, books) {
             res.send(books);
             db.close();
@@ -19,7 +18,7 @@ exports.issueBook = function (req, res) {
     var date = new Date();
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 
-    mongoClient.connect(url, function (err, db) {
+    mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("user").findOne({number: number}, function (err, result) {
             if (!result) {
                 res.send(null);
@@ -46,7 +45,7 @@ exports.issueBook = function (req, res) {
 exports.returnBook = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var id = new objectId(req.body.id);
-    mongoClient.connect(url, function (err, db) {
+    mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("book").findOneAndUpdate({_id: id}, {$set: {issued: null, issuedto: null}},
             {returnOriginal: false}, function (err, result) {
                 if (err) return res.status(400).send();
@@ -62,7 +61,7 @@ exports.findBooks = function (req, res) {
 
     var author = req.body.author;
 
-    mongoClient.connect(url, function (err, db) {
+    mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("book").find({
             name: new RegExp(name, "i"),
             author: new RegExp(author, "i")
@@ -80,7 +79,7 @@ exports.addBook = function (req, res) {
     book.name = req.body.name;
     book.issuedto = req.body.abonent;
     book.issued = req.body.issued;
-    mongoClient.connect(url, function (err, db) {
+    mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("book").insertOne(book, function (err, result) {
             if (err) return res.status(400).send();
             res.send(result.value);
@@ -92,7 +91,7 @@ exports.addBook = function (req, res) {
 exports.deleteBook = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var id = new objectId(req.body.id);
-    mongoClient.connect(url, function (err, db) {
+    mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("book").findOneAndDelete({_id: id}, function (err, result) {
             if (err) return res.status(400).send();
             var book = result.value;
