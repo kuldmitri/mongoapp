@@ -9,23 +9,24 @@
 <body>
 <form name="findBooks">
     <input type="hidden" name="id" value="0"/>
+    <h2>Найти книгу</h2>
     <div class="form-group">
         <label for="name">Название книги:</label>
-        <input class="form-control" name="bookName"/>
+        <input id = "inputName" class="form-control" name="bookName"/>
     </div>
     <div class="form-group">
         <label for="author">Автор:</label>
-        <input class="form-control" name="author"/>
+        <input id = "inputAuthor" class="form-control" name="author"/>
     </div>
     <div class="panel-body">
         <a id="Create" class="btn btn-sm btn-primary">Добавить книгу</a>
         <a id="Find" class="btn btn-sm btn-primary">Найти книги</a>
+        <a id="All" class="btn btn-sm btn-primary">Показать все книги библиотеки</a>
         <a id="RegisterUser" href="RegisterForm.html" class="btn btn-sm btn-primary">Зарегистрировать абонента</a>
     </div>
 </form>
 
-<h2>books</h2>
-<a id="All" class="btn btn-sm btn-primary">Show Library</a>
+<h2>Результат поиска</h2>
 <div id="baza"></div>
 
 <script>
@@ -62,7 +63,6 @@
         var form = document.forms["findBooks"];
         var name = form.elements["bookName"].value;
         var author = form.elements["author"].value;
-        console.log(name + ' ' + author);
 
         $.ajax({
             url: "findBooks",
@@ -155,6 +155,14 @@
     $("body").on("click", ".deleteLink", function () {
         var id = this.id;
         deleteBook(id);
+    });
+
+    $("#inputName").keyup(function (e) {
+        $('#Find').triggerHandler('click');
+    });
+
+    $("#inputAuthor").keyup(function (e) {
+        $('#Find').triggerHandler('click');
     });
 
     $('#All').triggerHandler('click');

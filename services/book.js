@@ -59,12 +59,15 @@ exports.returnBook = function (req, res) {
 
 exports.findBooks = function (req, res) {
     var name = req.body.name;
+
     var author = req.body.author;
-    console.log('findBooks ' + name + ' ' + author);
+
     mongoClient.connect(url, function (err, db) {
-        db.collection("book").find({name: name}).toArray(function (err, books) {
+        db.collection("book").find({
+            name: new RegExp(name, "i"),
+            author: new RegExp(author, "i")
+        }).toArray(function (err, books) {
             res.send(books);
-            console.log(books);
             db.close();
         });
     });
@@ -73,7 +76,6 @@ exports.findBooks = function (req, res) {
 exports.addBook = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var book = {};
-    console.log(req.body);
     book.author = req.body.author;
     book.name = req.body.name;
     book.issuedto = req.body.abonent;

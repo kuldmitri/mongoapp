@@ -15,7 +15,6 @@ exports.getUsers = function (req, res) {
 exports.addUser = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var user = {};
-    console.log(req.body);
     user.number = req.body.number;
     user.name = req.body.name;
     user.mail = req.body.mail;
@@ -25,8 +24,6 @@ exports.addUser = function (req, res) {
             if (err) return res.status(400).send();
             res.send(result.value);
             db.close();
-            console.log('add User');
-            console.log(user);
         });
     });
 };
@@ -47,7 +44,6 @@ exports.deleteUser = function (req, res) {
 exports.updateUser = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var user = {};
-    console.log(req.body);
     user.number = req.body.author;
     user.name = req.body.name;
     user.mail = req.body.abonent;
@@ -75,8 +71,7 @@ exports.gerIdAbonent = function (req, res) {
     var number = req.body.number;
 
     mongoClient.connect(url, function (err, db) {
-        db.collection("user").findOne({number: number},function (err, user) {
-            console.log(user);
+        db.collection("user").findOne({number: number}, function (err, user) {
             res.send(user);
             db.close();
         });
