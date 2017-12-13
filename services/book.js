@@ -14,19 +14,32 @@ exports.getBooks = function (req, res) {
 exports.issueBook = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var id = new objectId(req.body.id);
+    var idAbonent;
     var number = req.body.number;
     var date = new Date();
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 
     mongoClient.connect(url, function (err, db) {
-        db.collection("book").findOneAndUpdate({_id: id}, {$set: {issued: date, issuedto: number}},
-            {returnOriginal: false}, function (err, result) {
-                if (err) return res.status(400).send();
-                var book = result.value;
-                console.log(result);
-                res.send(book);
+        db.collection("user").findOne({number: number}, function (err, result) {
+            if (!result) {
+                res.send(null);
                 db.close();
-            });
+            } else {
+                idAbonent = new objectId(result._id);
+                db.collection("book").findOneAndUpdate({_id: id}, {
+                        $set: {
+                            issued: date,
+                            issuedto: idAbonent
+                        }
+                    },
+                    {returnOriginal: false}, function (err, result) {
+                        if (err) return res.status(400).send();
+                        var book = result.value;
+                        res.send(book);
+                        db.close();
+                    });
+            }
+        });
     });
 };
 
@@ -38,7 +51,6 @@ exports.returnBook = function (req, res) {
             {returnOriginal: false}, function (err, result) {
                 if (err) return res.status(400).send();
                 var book = result.value;
-                console.log(result);
                 res.send(book);
                 db.close();
             });

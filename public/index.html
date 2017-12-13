@@ -106,8 +106,12 @@
             data: JSON.stringify({
                 id: id,
                 number: number
-            })
-        })
+            }),
+            success: function (result) {
+                if (!result) alert('Введенный номер билета не зарегистрирован')
+            }
+        });
+        $('#All').triggerHandler('click');
     }
 
     function returnBook(id) {
@@ -134,32 +138,12 @@
         $('#All').triggerHandler('click');
     }
 
-    var getIdAbonent = function (number) {
-        var id;
-        $.ajax({
-            url: "gerIdAbonent",
-            contentType: "application/json",
-            method: "POST",
-            data: JSON.stringify({
-                number: number
-            }),
-            success: function (user) {
-                id = user._id;
-                console.log(user);
-                return id
-            }
-        });
-        //return id;
-    };
 
 
     $("body").on("click", ".issueLink", function () {
         var id = this.id;
         var number = prompt('Введите номер читательского билета абонента, которому будет выдана книга');
-        var user = getIdAbonent(number);
-        console.log(user);
-
-        if (user) issueBook(id, number);
+         issueBook(id, number);
         $('#All').triggerHandler('click');
     });
 
