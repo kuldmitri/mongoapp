@@ -4,7 +4,7 @@ var objectId = require("mongodb").ObjectID;
 exports.getUsers = function (req, res) {
     mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("user").find({}).toArray(function (err, users) {
-            res.send(users);
+            res.render('user.hbs', {user: users});
             db.close();
         });
     });

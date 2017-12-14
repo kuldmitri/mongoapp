@@ -4,6 +4,7 @@ var book = require('./services/book.js');
 var user = require('./services/user.js');
 
 var app = express();
+app.set("view engine", "hbs");
 var jsonParser = bodyParser.json();
 
 process.env.urlMongodb = "mongodb://localhost:27017/Library";
@@ -21,6 +22,8 @@ app.post("/updateUser", jsonParser, user.updateUser);
 app.post("/addUser", jsonParser, user.addUser);
 app.post("/deleteUser", jsonParser, user.deleteUser);
 app.post("/gerIdAbonent", jsonParser, user.gerIdAbonent);
+
+app.get("/hbs", book.hbs);
 
 app.listen(3000, function () {
     console.log("Сервер ожидает подключения...");

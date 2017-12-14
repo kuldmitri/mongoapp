@@ -12,11 +12,11 @@
     <h2>Найти книгу</h2>
     <div class="form-group">
         <label for="name">Название книги:</label>
-        <input id = "inputName" class="form-control" name="bookName"/>
+        <input id="inputName" class="form-control" name="bookName"/>
     </div>
     <div class="form-group">
         <label for="author">Автор:</label>
-        <input id = "inputAuthor" class="form-control" name="author"/>
+        <input id="inputAuthor" class="form-control" name="author"/>
     </div>
     <div class="panel-body">
         <a id="Create" class="btn btn-sm btn-primary">Добавить книгу</a>
@@ -36,12 +36,13 @@
             type: "GET",
             contentType: "application/json",
             success: function (books) {
-                $("#baza").html(booksToHtml(books));
+                $("#baza").html(books);
+                console.log(books)
             }
         });
     });
 
-    $("#Create").click(function (e) {
+       $("#Create").click(function (e) {
         //  e.preventDefault();
         var form = document.forms["findBooks"];
         var name = form.elements["bookName"].value;
@@ -73,30 +74,10 @@
                 author: author
             }),
             success: function (books) {
-                $("#baza").html(booksToHtml(books));
+                $("#baza").html(books);
             }
         });
     });
-
-    var bookToHtml = function (book) {
-        if (!book.issued) return '<div>' + ' ' + book.author + ' "' + book.name + '"         ' +
-            '<a class="issueLink" id="' + book._id + '">Выдать  </a>' +
-            '<a class="deleteLink" id="' + book._id + '">  Удалить </a>' +
-            '</div>';
-        return '<div>' + ' ' + book.author + ' "' + book.name + '" Выдана абоненту ' + book.issuedto + ' в ' + book.issued +
-            ' <a class="returnLink" id=' + book._id + '> Вернуть  </a>' +
-            '<a class="deleteLink" id="' + book._id + '">  Удалить </a>' +
-            '</div>';
-
-    };
-
-    var booksToHtml = function (books) {
-        var rows = "";
-        for (var i = 0; i < books.length; i++) {
-            rows = rows + bookToHtml(books[i]);
-        }
-        return rows;
-    }
 
     function issueBook(id, number) {
         $.ajax({
@@ -139,11 +120,10 @@
     }
 
 
-
     $("body").on("click", ".issueLink", function () {
         var id = this.id;
         var number = prompt('Введите номер читательского билета абонента, которому будет выдана книга');
-         issueBook(id, number);
+        issueBook(id, number);
         $('#All').triggerHandler('click');
     });
 

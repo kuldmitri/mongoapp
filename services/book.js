@@ -4,11 +4,17 @@ var objectId = require("mongodb").ObjectID;
 exports.getBooks = function (req, res) {
     mongoClient.connect(process.env.urlMongodb, function (err, db) {
         db.collection("book").find({}).toArray(function (err, books) {
-            res.send(books);
+            res.render('books.hbs',{books: books});
             db.close();
         });
     });
 };
+
+exports.hbs = function (req, res) {
+    console.log('books.hbs');
+    res.render('books.hbs');
+};
+
 
 exports.issueBook = function (req, res) {
     if (!req.body) return res.sendStatus(400);
@@ -35,6 +41,7 @@ exports.issueBook = function (req, res) {
                         if (err) return res.status(400).send();
                         var book = result.value;
                         res.send(book);
+                        console.log(result);
                         db.close();
                     });
             }
@@ -66,6 +73,7 @@ exports.findBooks = function (req, res) {
             name: new RegExp(name, "i"),
             author: new RegExp(author, "i")
         }).toArray(function (err, books) {
+            console.log('find');
             res.send(books);
             db.close();
         });

@@ -51,28 +51,13 @@
         $('#ShowUsers').triggerHandler('click');
     });
 
-    var userToHtml = function (user) {
-        return '<div>' + user.number + ' ' + user.name + ' ' + user.mail +
-            '<a class="deleteLink" id="' + user._id + '">  Удалить </a>' +
-            '</div>';
-    };
-
-    var usersToHtml = function (users) {
-        var rows = "";
-        for (var i = 0; i < users.length; i++) {
-            rows = rows + userToHtml(users[i]);
-        }
-        return rows;
-    }
-
-
     $("#ShowUsers").click(function (e) {
         $.ajax({
             url: "/users",
             type: "GET",
             contentType: "application/json",
             success: function (users) {
-                $("#baza").html(usersToHtml(users));
+                $("#baza").html(users);
             }
         });
     });
