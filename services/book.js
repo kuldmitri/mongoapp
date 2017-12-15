@@ -7,12 +7,6 @@ exports.getBooks = function (req, res) {
     });
 };
 
-exports.hbs = function (req, res) {
-    console.log('books.hbs');
-    res.render('books.hbs');
-};
-
-
 exports.issueBook = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var id = new objectId(req.body.id);
@@ -37,7 +31,6 @@ exports.issueBook = function (req, res) {
                     if (err) return res.status(400).send();
                     var book = result.value;
                     res.send(book);
-                    console.log(result);
                 });
         }
     });
@@ -61,8 +54,8 @@ exports.findBooks = function (req, res) {
         name: new RegExp(name, "i"),
         author: new RegExp(author, "i")
     }).toArray(function (err, books) {
-        console.log('find');
-        res.send(books);
+        res.render('books.hbs', {books: books});
+        console.log(books);
     });
 };
 

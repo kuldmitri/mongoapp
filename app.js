@@ -38,5 +38,3 @@ app.post("/addUser", jsonParser, user.addUser);
 app.post("/deleteUser", jsonParser, user.deleteUser);
 app.post("/gerIdAbonent", jsonParser, user.gerIdAbonent);
 
-app.get("/hbs", book.hbs);
-
