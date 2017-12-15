@@ -2,18 +2,26 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var book = require('./services/book.js');
 var user = require('./services/user.js');
-var mongoClient = require("mongodb").MongoClient;
+var db = require('./db/db.js');
 var app = express();
 
 app.set("view engine", "hbs");
 var jsonParser = bodyParser.json();
 
+//app.use('/books', require('./controllers/comments'))
+//app.use('/users', require('./controllers/users'))
+
 process.env.urlMongodb = "mongodb://localhost:27017/Library";
 
-mongoClient.connect(process.env.urlMongodb, function (err, database) {
-    global.db = database;
-    app.listen(3000);
-    console.log("Сервер ожидает подключения...");
+db.connect(process.env.urlMongodb, function(err) {
+    if (err) {
+        console.log('Unable to connect to Mongo.');
+        process.exit(1)
+    } else {
+        app.listen(3000, function() {
+            console.log('Listening on port 3000...')
+        })
+    }
 });
 
 app.use(express.static(__dirname + "/public"));

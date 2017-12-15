@@ -1,8 +1,8 @@
 var objectId = require("mongodb").ObjectID;
-
+var db = require('../db/db.js');
 
 exports.getBooks = function (req, res) {
-    global.db.collection("book").find({}).toArray(function (err, books) {
+    db.get().collection('book').find({}).toArray(function (err, books) {
         res.render('books.hbs', {books: books});
     });
 };
@@ -22,12 +22,12 @@ exports.issueBook = function (req, res) {
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 
 
-    global.db.collection("user").findOne({number: number}, function (err, result) {
+    db.get().collection("user").findOne({number: number}, function (err, result) {
         if (!result) {
             res.send(null);
         } else {
             idAbonent = new objectId(result._id);
-            db.collection("book").findOneAndUpdate({_id: id}, {
+            db.get().collection("book").findOneAndUpdate({_id: id}, {
                     $set: {
                         issued: date,
                         issuedto: idAbonent
@@ -46,7 +46,7 @@ exports.issueBook = function (req, res) {
 exports.returnBook = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var id = new objectId(req.body.id);
-    global.db.collection("book").findOneAndUpdate({_id: id}, {$set: {issued: null, issuedto: null}},
+    db.get().collection("book").findOneAndUpdate({_id: id}, {$set: {issued: null, issuedto: null}},
         {returnOriginal: false}, function (err, result) {
             if (err) return res.status(400).send();
             var book = result.value;
@@ -57,7 +57,7 @@ exports.returnBook = function (req, res) {
 exports.findBooks = function (req, res) {
     var name = req.body.name;
     var author = req.body.author;
-    global.db.collection("book").find({
+    db.get().collection("book").find({
         name: new RegExp(name, "i"),
         author: new RegExp(author, "i")
     }).toArray(function (err, books) {
@@ -73,7 +73,7 @@ exports.addBook = function (req, res) {
     book.name = req.body.name;
     book.issuedto = req.body.abonent;
     book.issued = req.body.issued;
-    global.db.collection("book").insertOne(book, function (err, result) {
+    db.get().collection("book").insertOne(book, function (err, result) {
         if (err) return res.status(400).send();
         res.send(result.value);
     });
@@ -82,7 +82,7 @@ exports.addBook = function (req, res) {
 exports.deleteBook = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var id = new objectId(req.body.id);
-    global.db.collection("book").findOneAndDelete({_id: id}, function (err, result) {
+    db.get().collection("book").findOneAndDelete({_id: id}, function (err, result) {
         if (err) return res.status(400).send();
         var book = result.value;
         res.send(book);
