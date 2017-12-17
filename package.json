@@ -9,7 +9,10 @@
     "body-parser": "^1.16.0",
     "express": "^4.14.0",
     "hbs": "^4.0.1",
+    "lodash": "^4.17.4",
     "mongodb": "^2.2.22",
-    "winston": "^2.4.0"
+    "nconf": "^0.9.1",
+    "winston": "^2.4.0",
+    "mongoose": "4.10.0"
   }
 }
