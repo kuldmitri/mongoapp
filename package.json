@@ -1,10 +1,15 @@
 {
   "name": "mongoapp",
   "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./app"
+  },
   "dependencies": {
     "body-parser": "^1.16.0",
     "express": "^4.14.0",
     "hbs": "^4.0.1",
-    "mongodb": "^2.2.22"
+    "mongodb": "^2.2.22",
+    "winston": "^2.4.0"
   }
 }

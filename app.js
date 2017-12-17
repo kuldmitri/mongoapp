@@ -4,6 +4,7 @@ var book = require('./services/book.js');
 var user = require('./services/user.js');
 var db = require('./db/db.js');
 var app = express();
+var logger = require('./libs/logger')(module);
 
 app.set("view engine", "hbs");
 var jsonParser = bodyParser.json();
@@ -15,11 +16,11 @@ process.env.urlMongodb = "mongodb://localhost:27017/Library";
 
 db.connect(process.env.urlMongodb, function(err) {
     if (err) {
-        console.log('Unable to connect to Mongo.');
+        logger.error('Unable to connect to Mongo.', {err});
         process.exit(1)
     } else {
         app.listen(3000, function() {
-            console.log('Listening on port 3000...')
+            logger.info('Listening on port 3000...');
         })
     }
 });
