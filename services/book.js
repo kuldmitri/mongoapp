@@ -2,11 +2,11 @@ var ObjectId = require("mongodb").ObjectID;
 var _ = require('lodash');
 var logger = require('../libs/logger')(module);
 var BookModel = require('../db/mongoose').BookModel;
+var UserModel = require('../db/mongoose').UserModel;
 
 exports.getBooks = function (req, res) {
     return BookModel.find(function (err, books) {
         if (err) return getServerError(err, res);
-
         return res.render('books.hbs', {books});
     });
 };
@@ -19,23 +19,17 @@ exports.issueBook = function (req, res) {
     var date = new Date();
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 
-
-    db.get().collection("user").findOne({number: number}, function (err, result) {
+    UserModel.findOne({number: number}, function (err, result) {
         if (!result) {
-            res.send(null);
+            res.send('Not found');
         } else {
             idAbonent = new ObjectId(result._id);
-            db.get().collection("book").findOneAndUpdate({_id: id}, {
-                    $set: {
-                        issued: date,
-                        issuedto: idAbonent
-                    }
-                },
-                {returnOriginal: false}, function (err, result) {
-                    if (err) return res.status(400).send();
-                    var book = result.value;
-                    res.send(book);
-                });
+            BookModel.findByIdAndUpdate(id, {issued: date, issuedto: idAbonent}, function (err, result) {
+                if (err) return res.status(400).send();
+                var book = result.value;
+                console.log(book);
+                res.send(book);
+            });
         }
     });
 };
@@ -43,12 +37,11 @@ exports.issueBook = function (req, res) {
 exports.returnBook = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var id = new ObjectId(req.body.id);
-    db.get().collection("book").findOneAndUpdate({_id: id}, {$set: {issued: null, issuedto: null}},
-        {returnOriginal: false}, function (err, result) {
-            if (err) return res.status(400).send();
-            var book = result.value;
-            res.send(book);
-        });
+    BookModel.findByIdAndUpdate(id, {issued: null, issuedto: null}, function (err, result) {
+        if (err) return getServerError(err, res);
+        var book = result.value;
+        res.send(book);
+    });
 };
 
 exports.findBooks = function (req, res) {
@@ -58,7 +51,6 @@ exports.findBooks = function (req, res) {
     };
     return BookModel.find(query, function (err, books) {
         if (err) return getServerError(err, res);
-
         return res.render('books.hbs', {books});
     });
 };
@@ -72,10 +64,8 @@ exports.addBook = function (req, res) {
         issuedto: null,
         issued: req.body.issued
     });
-
     book.save(function (err) {
         if (err) return getServerError(err, res);
-
         logger.debug("Book created", {book});
         return res.send({status: 'OK', book});
     });
@@ -84,7 +74,7 @@ exports.addBook = function (req, res) {
 exports.deleteBook = function (req, res) {
     if (!req.body) return res.sendStatus(400);
     var id = new ObjectId(req.body.id);
-    db.get().collection("book").findOneAndDelete({_id: id}, function (err, result) {
+    BookModel.findOneAndRemove(id, function (err, result) {
         if (err) return res.status(400).send();
         var book = result.value;
         res.send(book);
