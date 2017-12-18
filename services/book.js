@@ -7,7 +7,8 @@ var UserModel = require('../db/mongoose').UserModel;
 exports.getBooks = function (req, res) {
     return BookModel.find(function (err, books) {
         if (err) return getServerError(err, res);
-        return res.render('books.hbs', {books});
+        //return res.render('books.hbs', {books});
+        return res.send(books);
     });
 };
 

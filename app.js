@@ -4,7 +4,9 @@ var book = require('./services/book.js');
 var user = require('./services/user.js');
 var app = express();
 var logger = require('./libs/logger')(module);
-var config = require('./libs/config');
+var config = require('config');
+
+console.log(config);
 
 app.set("view engine", "hbs");
 var jsonParser = bodyParser.json();
@@ -23,6 +25,7 @@ app.post("/addUser", jsonParser, user.addUser);
 app.post("/deleteUser", jsonParser, user.deleteUser);
 app.post("/gerIdAbonent", jsonParser, user.gerIdAbonent);
 
-app.listen(config.get('port'), function () {
+app.listen(config.port, function () {
     logger.info('Listening on port 3000...');
 });
+module.exports = app; // для тестирования
