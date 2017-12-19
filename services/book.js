@@ -7,7 +7,6 @@ var UserModel = require('../db/mongoose').UserModel;
 exports.getBooks = function (req, res) {
     return BookModel.find(function (err, books) {
         if (err) return getServerError(err, res);
-        //return res.render('books.hbs', {books});
         return res.send(books);
     });
 };
@@ -52,7 +51,7 @@ exports.findBooks = function (req, res) {
     };
     return BookModel.find(query, function (err, books) {
         if (err) return getServerError(err, res);
-        return res.render('books.hbs', {books});
+        return res.send(books);
     });
 };
 
@@ -74,8 +73,8 @@ exports.addBook = function (req, res) {
 
 exports.deleteBook = function (req, res) {
     if (!req.body) return res.sendStatus(400);
-    var id = new ObjectId(req.body.id);
-    BookModel.findOneAndRemove(id, function (err, result) {
+    var id = req.body.id;
+    BookModel.findByIdAndRemove(id, function (err, result) {
         if (err) return res.status(400).send();
         var book = result.value;
         res.send(book);

@@ -5,6 +5,7 @@
     <title>Library</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="handlebars.js"></script>
 </head>
 <body>
 <form name="RegisterForm">
@@ -29,7 +30,30 @@
 </form>
 
 <h2>Зарегистрированные пользователи</h2>
-<div id="baza"></div>
+<div id="search">
+    <script id="template" type="text/x-handlebars-template">
+        <table class="table table-condensed table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Имя</th>
+                <th>Номер читательского билета</th>
+                <th>Адрес Электронной почты</th>
+                <th>Возможные действия</th>
+                <th>Id</th>
+            <tr>
+            </thead>
+            {{#each users}}
+            <tr>
+                <td>{{this.name}}</td>
+                <td>{{this.number}}</td>
+                <td>{{this.mail}}</td>
+                <td><a class="deleteLink" id={{this._id}}> Удалить </a></td>
+                <td>{{this._id}}</td>
+            </tr>
+            {{/each}}
+        </table>
+    </script>
+</div>
 
 <script>
     $("#Create").click(function (e) {
@@ -57,7 +81,8 @@
             type: "GET",
             contentType: "application/json",
             success: function (users) {
-                $("#baza").html(users);
+                data.users = users;
+                $('#search').html(template(data));
             }
         });
     });
@@ -78,8 +103,9 @@
         });
         $('#ShowUsers').triggerHandler('click');
     }
+    var data = {};
+    var template = Handlebars.compile($('#template').html());
     $('#ShowUsers').triggerHandler('click');
-
 </script>
 </body>
 </html>
