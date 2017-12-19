@@ -65,7 +65,10 @@ exports.addBook = function (req, res) {
         issued: req.body.issued
     });
     book.save(function (err) {
-        if (err) return getServerError(err, res);
+        if (err) {
+            return getServerError(err, res);
+            console.log(err);
+        }
         logger.debug("Book created", {book});
         return res.send({status: 'OK', book});
     });
@@ -84,5 +87,5 @@ exports.deleteBook = function (req, res) {
 function getServerError(err, res) {
     res.statusCode = 500;
     logger.error('Internal error(%d): %s', res.statusCode, err.message);
-    return res.send({error: 'Server error'});
+    return res.send(err);
 }
