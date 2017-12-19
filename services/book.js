@@ -26,9 +26,7 @@ exports.issueBook = function (req, res) {
             idAbonent = new ObjectId(result._id);
             BookModel.findByIdAndUpdate(id, {issued: date, issuedto: idAbonent}, function (err, result) {
                 if (err) return res.status(400).send();
-                var book = result.value;
-                console.log(book);
-                res.send(book);
+                res.send(result);
             });
         }
     });
