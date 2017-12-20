@@ -1,8 +1,6 @@
-var ObjectId = require("mongodb").ObjectID;
 var _ = require('lodash');
 var logger = require('../libs/logger')(module);
-var BookModel = require('../db/mongoose').BookModel;
-var UserModel = require('../db/mongoose').UserModel;
+var UserModel = require('../models/user').UserModel;
 
 exports.getUsers = function (req, res) {
     return UserModel.find(function (err, users) {
