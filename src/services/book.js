@@ -24,9 +24,9 @@ exports.issueBook = function (req, res) {
             res.send('Not found');
         } else {
             idAbonent = new ObjectId(result._id);
-            BookModel.findByIdAndUpdate(id, {issued: date, issuedto: idAbonent}, function (err, result) {
+            BookModel.findByIdAndUpdate(id, {issued: date, issuedto: idAbonent}, {new: true}, function (err, book) {
                 if (err) return res.status(400).send();
-                res.send(result);
+                res.send({status: 'OK', book});
             });
         }
     });

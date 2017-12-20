@@ -1,15 +1,19 @@
 var express = require("express");
 var bodyParser = require("body-parser");
-var book = require('./services/book.js');
-var user = require('./services/user.js');
+var book = require('./src/services/book.js');
+var user = require('./src/services/user.js');
 var app = express();
-var logger = require('./libs/logger')(module);
+var logger = require('./src/libs/logger')(module);
 var config = require('config');
 
 console.log(config);
 
 app.set("view engine", "hbs");
 var jsonParser = bodyParser.json();
+
+//app.use('/books', require('./controllers/books'));
+//app.use('/users', require('./controllers/users'));
+app.use('/example', require('./src/controllers/example'));
 
 app.use(express.static(__dirname + "/public"));
 app.get("/books", book.getBooks);

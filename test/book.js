@@ -7,13 +7,16 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let app = require('../app');
 let should = chai.should();
-let Book = require('../db/mongoose.js').BookModel;
-let User = require('../db/mongoose.js').UserModel;
+let Book = require('../src/db/mongoose.js').BookModel;
+let User = require('../src/db/mongoose.js').UserModel;
 
 chai.use(chaiHttp);
 describe('Books', function () {
     beforeEach(function (done) { //Перед каждым тестом чистим базу
         Book.remove({}, function (err) {
+            done();
+        });
+        User.remove({}, function (err) {
             done();
         });
     });
@@ -67,23 +70,34 @@ describe('Books', function () {
 
     });
     describe('issue and return book', function () {
-        it('it should issue a book to user given the id', function (done) {
-            let book = new Book({name: "The Chronicles of Narnia", author: "C.S. Lewis"});
+        let book = new Book({name: "The Chronicles of Narnia", author: "C.S. Lewis"});
+        let user = new User({name: "Charli", number: "1", mail: 'dfdfdf.com'});
+        var idBook;
+        var idUser;
+        before(function () {
             book.save(function (err, book) {
-                let user = new User({name: "Charli", number: "1", mail: 'dfdfdf.com'});
-                user.save(function (err, user) {
-                    chai.request(app)
-                        .post('/issueBook')
-                        .send({id: book._id.toString, number: '1'})
-                        .end(function (err, res) {
-                            res.should.have.status(200);
-                            res.body.should.be.a('object');
-                            res.body.should.have.property('issued');
-                            res.body.should.have.property('issuedto').eql(user._id.toString);
-                            done();
-                        });
-                });
+                idBook = book._id.toString();
             });
+            user.save(function (err, user) {
+                idUser = user._id.toString();
+            });
+        });
+        it('it should issue a book to user given the id', function (done) {
+            chai.request(app)
+                .post('/issueBook')
+                .send({id: idBook, number: '1'})
+                .end(function (err, res) {
+                    Book.find(function (err, books) {
+                        console.log('res' + books);
+                    });
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.book.should.have.property('issued');
+                    res.body.book.should.have.property('issuedto');
+                    //res.body.should.have.property('issued');
+                    //res.body.should.have.property('issuedto').eql(user._id.toString);
+                    done();
+                });
         });
     });
 });
