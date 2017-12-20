@@ -82,7 +82,7 @@
         var name = form.elements["bookName"].value;
         var author = form.elements["author"].value;
         $.ajax({
-            url: "addBook",
+            url: "/books/add",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
@@ -99,7 +99,7 @@
         var author = form.elements["author"].value;
 
         $.ajax({
-            url: "findBooks",
+            url: "/books/find",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
@@ -115,7 +115,7 @@
 
     function issueBook(id, number) {
         $.ajax({
-            url: "issueBook",
+            url: "/books/issue",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
@@ -131,7 +131,7 @@
 
     function returnBook(id) {
         $.ajax({
-            url: "returnBook",
+            url: "books/return",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
@@ -143,7 +143,7 @@
 
     function deleteBook(id) {
         $.ajax({
-            url: "deleteBook",
+            url: "books/delete",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({

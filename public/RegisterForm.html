@@ -63,7 +63,7 @@
         var name = form.elements["name"].value;
         var mail = form.elements["mail"].value;
         $.ajax({
-            url: "addUser",
+            url: "users/add",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
@@ -94,7 +94,7 @@
 
     function deleteUser(id) {
         $.ajax({
-            url: "deleteUser",
+            url: "users/delete",
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify({
