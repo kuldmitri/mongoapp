@@ -2,7 +2,6 @@ process.env.NODE_ENV = 'test';
 
 let mongoose = require("mongoose");
 
-//Подключаем dev-dependencies
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let app = require('../app');

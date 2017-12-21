@@ -1,12 +1,12 @@
 var router = require('express').Router();
-var user = require('../services/user.srv.js');
+var user = require('../models/user.js');
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
 
-router.get("/", user.getUsers);
-router.post("/update", jsonParser, user.updateUser);
-router.post("/add", jsonParser, user.addUser);
-router.post("/delete", jsonParser, user.deleteUser);
+router.get("/", user.get);
+router.post("/update", jsonParser, user.update);
+router.post("/add", jsonParser, user.add);
+router.post("/delete", jsonParser, user.delete);
 router.post("/getIdAbonent", jsonParser, user.gerIdAbonent);
 
 module.exports = router;

@@ -1,13 +1,13 @@
 var router = require('express').Router();
-var book = require('../services/book.srv.js');
+var book = require('../models/book.js');
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
 
-router.get("/", book.getBooks);
-router.post("/issue", jsonParser, book.issueBook);
-router.post("/return", jsonParser, book.returnBook);
-router.post("/find", jsonParser, book.findBooks);
-router.post("/add", jsonParser, book.addBook);
-router.post("/delete", jsonParser, book.deleteBook);
+router.get("/", book.get);
+router.post("/issue", jsonParser, book.issue);
+router.post("/return", jsonParser, book.return);
+router.post("/find", jsonParser, book.find);
+router.post("/add", jsonParser, book.add);
+router.post("/delete", jsonParser, book.delete);
 
 module.exports = router;
