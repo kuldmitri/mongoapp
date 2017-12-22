@@ -1,4 +1,3 @@
-var _ = require('lodash');
 var logger = require('../libs/logger')(module);
 var UserModel = require('../db/user').UserModel;
 

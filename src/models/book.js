@@ -63,7 +63,7 @@ exports.add = function (req, res) {
     book.save(function (err) {
         if (err) {
             return getServerError(err, res);
-            console.log(err);
+            console.log('Error book.save');
         }
         logger.debug("Book created", {book});
         return res.send({status: 'OK', book});

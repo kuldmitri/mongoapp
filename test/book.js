@@ -1,4 +1,5 @@
 process.env.NODE_ENV = 'test';
+process.env.urlMongodb = 'mongodb://localhost:27017/LibraryTest';
 
 let mongoose = require("mongoose");
 
@@ -6,8 +7,8 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let app = require('../app');
 let should = chai.should();
-let Book = require('../src/db/mongoose.js').BookModel;
-let User = require('../src/db/mongoose.js').UserModel;
+let Book = require('../src/db/book.js').BookModel;
+let User = require('../src/db/user.js').UserModel;
 
 chai.use(chaiHttp);
 describe('Books', function () {
