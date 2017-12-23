@@ -1,5 +1,5 @@
 var router = require('express').Router();
-var user = require('../models/user.js');
+var user = require('../models/userModel.js');
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
 

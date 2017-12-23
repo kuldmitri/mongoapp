@@ -1,7 +1,10 @@
 To start it is necessary 
-1. To start Mongodb on port 27017
-2. Using node.js run app.js
-3. Using the browser go to the localhost:3000
+1. To start Mongodb
+2. Specify the environment variables in the .env file in the root of project:
+    a. port - port number that will listen to the server    
+    b. urlMongodb - server address specifying the database
+3. Run node app.js in the terminal
+4. Using the browser go to the port listening to the server
 
 The application allows you to create and edit a database containing:
 1. A collection of books stored in the library

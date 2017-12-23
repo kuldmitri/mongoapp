@@ -1,6 +1,6 @@
 var logger = require('../libs/logger')(module);
-var BookModel = require('../db/book').BookModel;
-var UserModel = require('../db/user').UserModel;
+var BookModel = require('../db/bookShema').BookModel;
+var UserModel = require('../db/userShema').UserModel;
 
 exports.get = function (req, res) {
     return BookModel.find(function (err, books) {

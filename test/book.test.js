@@ -7,8 +7,8 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let app = require('../app');
 let should = chai.should();
-let Book = require('../src/db/book.js').BookModel;
-let User = require('../src/db/user.js').UserModel;
+let Book = require('../src/db/bookShema.js').BookModel;
+let User = require('../src/db/userShema.js').UserModel;
 
 chai.use(chaiHttp);
 describe('Books', function () {
@@ -39,7 +39,7 @@ describe('Books', function () {
                 author: 'petrow'
             };
             chai.request(app)
-                .post('/addBook')
+                .post('/books/add')
                 .send(book)
                 .end(function (err, res) {
                     res.should.have.status(500);
@@ -56,7 +56,7 @@ describe('Books', function () {
                 author: 'J.R.R. Tolkien'
             };
             chai.request(app)
-                .post('/addBook')
+                .post('/books/add')
                 .send(book)
                 .end(function (err, res) {
                     res.should.have.status(200);
@@ -84,7 +84,7 @@ describe('Books', function () {
         });
         it('it should issue a book to user given the id', function (done) {
             chai.request(app)
-                .post('/issueBook')
+                .post('/books/issue')
                 .send({id: idBook, number: '1'})
                 .end(function (err, res) {
                     Book.find(function (err, books) {

@@ -1,5 +1,5 @@
 var logger = require('../libs/logger')(module);
-var UserModel = require('../db/user').UserModel;
+var UserModel = require('../db/userShema').UserModel;
 
 exports.get = function (req, res) {
     return UserModel.find(function (err, users) {
