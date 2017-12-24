@@ -24,6 +24,7 @@ exports.issue = function (req, res) {
             idAbonent = result._id;
             BookModel.findByIdAndUpdate(id, {issued: date, issuedto: idAbonent}, {new: true}, function (err, book) {
                 if (err) return res.status(400).send();
+                console.log(book);
                 res.send({status: 'OK', book});
             });
         }
