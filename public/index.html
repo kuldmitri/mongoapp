@@ -33,6 +33,9 @@
 <h2>Результат поиска</h2>
 <div id="search">
     <script id="template" type="text/x-handlebars-template">
+        {{#if this.message}}
+        <div>Ошибка {{this}}</div>
+        {{/if}}
         <table class="table table-condensed table-striped table-bordered">
             <thead>
             <tr>
@@ -52,12 +55,12 @@
                 <td>{{this.issued}}</td>
                 <td>{{this.issuedto}}</td>
                 <td><a class="returnLink" id={{this._id}}> Вернуть </a>
-                {{else}}
+                    {{else}}
                 <td></td>
                 <td></td>
                 <td><a class="issueLink" id={{this._id}}> Выдать </a>
-                {{/if}}
-                <a class="deleteLink" id={{this._id}}> Удалить </a></td>
+                    {{/if}}
+                    <a class="deleteLink" id={{this._id}}> Удалить </a></td>
                 <td>{{this._id}}</td>
             </tr>
             {{/each}}
@@ -73,6 +76,9 @@
             success: function (books) {
                 data.books = books;
                 $('#search').html(template(data));
+            },
+            error: function (error) {
+                alert(error.responseText);
             }
         });
     });
@@ -88,7 +94,10 @@
             data: JSON.stringify({
                 name: name,
                 author: author
-            })
+            }),
+            error: function (error) {
+                alert(error.responseText);
+            }
         });
         $('#All').triggerHandler('click');
     });
@@ -109,6 +118,9 @@
             success: function (books) {
                 data.books = books;
                 $('#search').html(template(data));
+            },
+            error: function (error) {
+                alert(error.responseText);
             }
         });
     });
@@ -124,6 +136,9 @@
             }),
             success: function (result) {
                 if (result == 'Not found') alert('Введенный номер билета не зарегистрирован')
+            },
+            error: function (error) {
+                alert(error.responseText);
             }
         });
         $('#All').triggerHandler('click');
@@ -136,7 +151,10 @@
             method: "POST",
             data: JSON.stringify({
                 id: id
-            })
+            }),
+            error: function (error) {
+                alert(error.responseText);
+            }
         });
         $('#All').triggerHandler('click');
     }
@@ -148,7 +166,10 @@
             method: "POST",
             data: JSON.stringify({
                 id: id
-            })
+            }),
+            error: function (error) {
+                alert(error.responseText);
+            }
         });
         $('#All').triggerHandler('click');
     }

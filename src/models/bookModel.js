@@ -1,59 +1,57 @@
-var logger = require('../libs/logger')(module);
-var BookModel = require('../db/bookShema').BookModel;
-var UserModel = require('../db/userShema').UserModel;
+const _ = require('lodash');
+const logger = require('../libs/logger')(module);
+const BookModel = require('../db/bookShema').BookModel;
+const UserModel = require('../db/userShema').UserModel;
 
-exports.get = function (req, res) {
-    return BookModel.find(function (err, books) {
-        if (err) return getServerError(err, res);
-        return res.send(books);
+exports.get = function (req, res, next) {
+    BookModel.find(function (err, books) {
+       if (err) return next(err);
+       res.send(books);
     });
 };
 
-exports.issue = function (req, res) {
-    if (!req.body) return res.sendStatus(400);
-    var id = req.body.id;
-    var idAbonent;
-    var number = req.body.number;
+exports.issue = function (req, res, next) {
+    const id = _.get(req, 'body.id');
+    const number = _.get(req, 'body.number');
+    if (!id || !number) return next(new Error('Invalid request data'));
+
     var date = new Date();
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-
-    UserModel.findOne({number: number}, function (err, result) {
+    UserModel.findOne({number}, function (err, result) {
+        if (err) return next(err);
         if (!result) {
-            res.send('Not found');
-        } else {
-            idAbonent = result._id;
-            BookModel.findByIdAndUpdate(id, {issued: date, issuedto: idAbonent}, {new: true}, function (err, book) {
-                if (err) return res.status(400).send();
-                console.log(book);
-                res.send({status: 'OK', book});
-            });
+           return res.send('Not found');
         }
+        BookModel.findByIdAndUpdate(id, {issued: date, issuedto: result._id}, {new: true}, function (err, book) {
+            if (err) return next(err);
+            res.send({book});
+        });
     });
 };
 
-exports.return = function (req, res) {
-    if (!req.body) return res.sendStatus(400);
+exports.return = function (req, res, next) {
+    if (!req.body.id) return next (new Error('Invalid request data'));
     var id = req.body.id;
     BookModel.findByIdAndUpdate(id, {issued: null, issuedto: null}, function (err, result) {
-        if (err) return getServerError(err, res);
+        if (err) return next(err);
         var book = result.value;
         res.send(book);
     });
 };
 
-exports.find = function (req, res) {
+exports.find = function (req, res, next) {
     var query = {
         name: new RegExp(req.body.name, "i"),
         author: new RegExp(req.body.author, "i")
     };
-    return BookModel.find(query, function (err, books) {
-        if (err) return getServerError(err, res);
-        return res.send(books);
+    BookModel.find(query, function (err, books) {
+        if (err) return next(err);
+        res.send(books);
     });
 };
 
-exports.add = function (req, res) {
-    if (!req.body) return res.sendStatus(400);
+exports.add = function (req, res, next) {
+    if (!req.body.name || !req.body.author) return next(new Error('Invalid request data'));
 
     var book = new BookModel({
         author: req.body.author,
@@ -62,27 +60,15 @@ exports.add = function (req, res) {
         issued: req.body.issued
     });
     book.save(function (err) {
-        if (err) {
-            return getServerError(err, res);
-            console.log('Error book.save');
-        }
-        logger.debug("Book created", {book});
-        return res.send({status: 'OK', book});
+        if (err) return next(err);
+        res.send({book});
     });
 };
 
-exports.delete = function (req, res) {
-    if (!req.body) return res.sendStatus(400);
-    var id = req.body.id;
-    BookModel.findByIdAndRemove(id, function (err, result) {
-        if (err) return res.status(400).send();
-        var book = result.value;
-        res.send(book);
+exports.delete = function (req, res, next) {
+    if (!req.body.id) return next(new Error('Invalid request data'));
+    BookModel.findByIdAndRemove(req.body.id, function (err, result) {
+        if (err) return next(err);
+        res.send(result.value);
     });
 };
-
-function getServerError(err, res) {
-    res.statusCode = 500;
-    logger.error('Internal error(%d): %s', res.statusCode, err.message);
-    return res.send(err);
-}

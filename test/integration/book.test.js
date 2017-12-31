@@ -1,24 +1,28 @@
 process.env.NODE_ENV = 'test';
 process.env.urlMongodb = 'mongodb://localhost:27017/LibraryTest';
 
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-let chai = require('chai');
-let chaiHttp = require('chai-http');
-let app = require('../app');
-let should = chai.should();
-let Book = require('../src/db/bookShema.js').BookModel;
-let User = require('../src/db/userShema.js').UserModel;
+const async = require('async');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const app = require('../../app');
+const should = chai.should();
+const Book = require('../../src/db/bookShema.js').BookModel;
+const User = require('../../src/db/userShema.js').UserModel;
 
 chai.use(chaiHttp);
 describe('Books', function () {
-    beforeEach(function (done) { //Перед каждым тестом чистим базу
-        Book.remove({}, function (err) {
+    beforeEach('clear database', (done) => {
+        async.parallel([
+            Book.remove({}),
+            User.remove({})
+        ], (err) => {
+            should.not.exist(err)
+            done();
         });
-        User.remove({}, function (err) {
-        });
-        done();
     });
+
     describe('/GET book', function () {
         it('it should GET all the books', function (done) {
             chai.request(app)
@@ -60,7 +64,6 @@ describe('Books', function () {
                 .end(function (err, res) {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.status('OK');
                     res.body.book.should.have.property('name');
                     res.body.book.should.have.property('author');
                     done();

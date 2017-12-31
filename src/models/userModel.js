@@ -19,7 +19,7 @@ exports.add = function (req, res) {
     user.save(function (err) {
         if (err) return getServerError(err, res);
         logger.debug("User created", {user});
-        return res.send({status: 'OK', user});
+        return res.send({user});
     });
 };
 
