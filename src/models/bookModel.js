@@ -2,6 +2,7 @@ const _ = require('lodash');
 const logger = require('../libs/logger')(module);
 const BookModel = require('../db/bookShema').BookModel;
 const UserModel = require('../db/userShema').UserModel;
+const httpErrors = require('../utils/httpErrors');
 
 exports.get = function (req, res, next) {
     BookModel.find(function (err, books) {
@@ -13,7 +14,7 @@ exports.get = function (req, res, next) {
 exports.issue = function (req, res, next) {
     const id = _.get(req, 'body.id');
     const number = _.get(req, 'body.number');
-    if (!id || !number) return next(new Error('Invalid request data'));
+    if (!id || !number) return next(httpErrors.createBadRequestError());
 
     var date = new Date();
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
@@ -30,12 +31,10 @@ exports.issue = function (req, res, next) {
 };
 
 exports.return = function (req, res, next) {
-    if (!req.body.id) return next (new Error('Invalid request data'));
-    var id = req.body.id;
-    BookModel.findByIdAndUpdate(id, {issued: null, issuedto: null}, function (err, result) {
+    if (!req.body.id) return next (httpErrors.createBadRequestError());
+    BookModel.findByIdAndUpdate(req.body.id, {issued: null, issuedto: null}, function (err, result) {
         if (err) return next(err);
-        var book = result.value;
-        res.send(book);
+        res.send(result.value);
     });
 };
 
@@ -51,8 +50,7 @@ exports.find = function (req, res, next) {
 };
 
 exports.add = function (req, res, next) {
-    if (!req.body.name || !req.body.author) return next(new Error('Invalid request data'));
-
+    if (!req.body.name || !req.body.author) return next(httpErrors.createBadRequestError());
     var book = new BookModel({
         author: req.body.author,
         name: req.body.name,
@@ -66,7 +64,7 @@ exports.add = function (req, res, next) {
 };
 
 exports.delete = function (req, res, next) {
-    if (!req.body.id) return next(new Error('Invalid request data'));
+    if (!req.body.id) return next(httpErrors.createBadRequestError());
     BookModel.findByIdAndRemove(req.body.id, function (err, result) {
         if (err) return next(err);
         res.send(result.value);

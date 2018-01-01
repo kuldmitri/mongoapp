@@ -17,13 +17,13 @@ app.listen(process.env.port, () => {
 });
 
 app.use((err, req, res, next) => {
-    logger.error({error: err.stack});
-    if (err.message === 'Invalid request data') {
-        res.status(400);
-        res.send('Invalid request data');
-    } else {
+    logger.error({error: err.message});
+    if (!err.status) {
         res.status(500);
         res.send('Houston, we have a problem');
+    } else {
+        res.status(err.status);
+        res.send(err.message);
     }
 });
 

@@ -1,64 +1,45 @@
 var logger = require('../libs/logger')(module);
 var UserModel = require('../db/userShema').UserModel;
+const httpErrors = require('../utils/httpErrors');
 
-exports.get = function (req, res) {
-    return UserModel.find(function (err, users) {
-        if (err) return getServerError(err, res);
+exports.get = (req, res) => {
+    return UserModel.find((err, users) => {
+        if (err) return next(err);
         return res.send(users);
     });
 };
 
-
-exports.add = function (req, res) {
-      if (!req.body) return res.sendStatus(400);
+exports.add = (req, res) => {
+    if (!req.body.number || !req.body.name || !req.body.mail) return next(httpErrors.createBadRequestError());
     var user = new UserModel({
         number: req.body.number,
         name: req.body.name,
         mail: req.body.mail
     });
-    user.save(function (err) {
-        if (err) return getServerError(err, res);
-        logger.debug("User created", {user});
+    user.save((err) => {
+        if (err) return next(err);
+        logger.debug('User add', {user});
         return res.send({user});
     });
 };
 
-exports.delete = function (req, res) {
-    if (!req.body) return res.sendStatus(400);
-    var id = req.body.id;
-   UserModel.findByIdAndRemove(id , function (err, result) {
-        if (err) return res.status(400).send();
-        var user = result.value;
-        res.send(user);
+exports.delete = (req, res) => {
+    if (!req.body.id) return next(httpErrors.createBadRequestError());
+    UserModel.findByIdAndRemove(req.body.id, (err, result) => {
+        if (err) return next(err);
+        res.send(result.value);
     });
 };
 
-exports.update = function (req, res) {
-    if (!req.body) return res.sendStatus(400);
-    var id = new objectId(req.body.id);
+exports.update = (req, res) => {
+    if (!req.body.id) return next(httpErrors.createBadRequestError());
     var user = new UserModel({
         number: req.body.number,
         name: req.body.name,
         mail: req.body.mail
     });
-    UserModel.findOneAndUpdate(id , user,  function (err, result) {
-            if (err) return res.status(400).send();
-            var user = result.value;
-            res.send(user);
-        });
-};
-
-
-exports.gerIdAbonent = function (req, res) {
-    if (!req.body) return res.sendStatus(400);
-    var number = req.body.number;
-    UserModel.findOne({number: number}, function (err, user) {
-        res.send(user);
+    UserModel.findOneAndUpdate(req.body.id, user, (err, result) => {
+        if (err) return next(err);
+        res.send(result.value);
     });
 };
-
-function getServerError(err, res) {
-    res.statusCode = 500;
-    logger.error('Internal error(%d): %s', res.statusCode, err.message);
-    return res.send({error: 'Server error'});
-}
