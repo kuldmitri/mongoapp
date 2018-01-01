@@ -4,15 +4,16 @@
   "private": true,
   "scripts": {
     "start": "SET NODE_ENV=dev && node app.js",
-    "test": "mocha"
+    "test": "nyc --report=html --report=text mocha",
+    "posttest": "nyc check-coverage --lines 79 --functions 56 --branches 34"
   },
   "dependencies": {
-    "async": "^2.6.0",
+    "async": "2.6.0",
     "body-parser": "1.16.0",
     "chance": "^1.0.13",
     "config": "1.28.1",
-    "dotenv": "^4.0.0",
-    "env-cmd": "^7.0.0",
+    "dotenv": "4.0.0",
+    "env-cmd": "7.0.0",
     "express": "4.14.0",
     "hbs": "4.0.1",
     "lodash": "4.17.4",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "chai": "4.1.2",
     "chai-http": "3.0.0",
-    "mocha": "4.0.1"
+    "mocha": "4.0.1",
+    "nyc": "11.4.1"
   }
 }
