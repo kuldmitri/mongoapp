@@ -6,8 +6,8 @@ const httpErrors = require('../utils/httpErrors');
 
 exports.get = function (req, res, next) {
     BookModel.find(function (err, books) {
-       if (err) return next(err);
-       res.send(books);
+        if (err) return next(err);
+        return res.send(books);
     });
 };
 
@@ -18,10 +18,10 @@ exports.issue = function (req, res, next) {
 
     var date = new Date();
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-    UserModel.findOne({number}, function (err, result) {
+    UserModel.findOne({number: number}, function (err, result) {
         if (err) return next(err);
         if (!result) {
-           return res.send('Not found');
+            return res.send('Not found');
         }
         BookModel.findByIdAndUpdate(id, {issued: date, issuedto: result._id}, {new: true}, function (err, book) {
             if (err) return next(err);
@@ -31,10 +31,10 @@ exports.issue = function (req, res, next) {
 };
 
 exports.return = function (req, res, next) {
-    if (!req.body.id) return next (httpErrors.createBadRequestError());
-    BookModel.findByIdAndUpdate(req.body.id, {issued: null, issuedto: null}, function (err, result) {
+    if (!req.body.id) return next(httpErrors.createBadRequestError());
+    BookModel.findByIdAndUpdate(req.body.id, {issued: null, issuedto: null}, {new: true}, function (err, result) {
         if (err) return next(err);
-        res.send(result.value);
+        res.send({book: result._doc});
     });
 };
 

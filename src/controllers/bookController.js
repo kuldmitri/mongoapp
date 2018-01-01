@@ -4,6 +4,7 @@ var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
 
 router.get("/", book.get);
+// TODO modify controllers methods to return response for abstract services layer
 router.post("/issue", jsonParser, book.issue);
 router.post("/return", jsonParser, book.return);
 router.post("/find", jsonParser, book.find);
