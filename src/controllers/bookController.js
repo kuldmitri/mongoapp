@@ -1,7 +1,7 @@
-var router = require('express').Router();
-var book = require('../models/bookModel.js');
-var bodyParser = require("body-parser");
-var jsonParser = bodyParser.json();
+const router = require('express').Router();
+const book = require('../models/bookModel.js');
+const bodyParser = require("body-parser");
+const jsonParser = bodyParser.json();
 
 router.get("/", book.get);
 // TODO modify controllers methods to return response for abstract services layer

@@ -58,10 +58,10 @@
 <script>
     $("#Create").click(function (e) {
         //  e.preventDefault();
-        var form = document.forms["RegisterForm"];
-        var number = form.elements["number"].value;
-        var name = form.elements["name"].value;
-        var mail = form.elements["mail"].value;
+        const form = document.forms["RegisterForm"];
+        const number = form.elements["number"].value;
+        const name = form.elements["name"].value;
+        const mail = form.elements["mail"].value;
         $.ajax({
             url: "users/add",
             contentType: "application/json",
@@ -70,7 +70,10 @@
                 number: number,
                 name: name,
                 mail: mail
-            })
+            }),
+            error: function (error) {
+                alert(error.responseText);
+            }
         });
         $('#ShowUsers').triggerHandler('click');
     });
@@ -83,12 +86,15 @@
             success: function (users) {
                 data.users = users;
                 $('#search').html(template(data));
+            },
+            error: function (error) {
+                alert(error.responseText);
             }
         });
     });
 
     $("body").on("click", ".deleteLink", function () {
-        var id = this.id;
+        const id = this.id;
         deleteUser(id);
     });
 
@@ -99,12 +105,15 @@
             method: "POST",
             data: JSON.stringify({
                 id: id
-            })
+            }),
+            error: function (error) {
+                alert(error.responseText);
+            }
         });
         $('#ShowUsers').triggerHandler('click');
     }
-    var data = {};
-    var template = Handlebars.compile($('#template').html());
+    let data = {};
+    let template = Handlebars.compile($('#template').html());
     $('#ShowUsers').triggerHandler('click');
 </script>
 </body>

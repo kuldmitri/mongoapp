@@ -2,10 +2,10 @@ require('dotenv').config();
 console.log('process.env.port = ' + process.env.port);
 console.log('process.env.urlMongodb = ' + process.env.urlMongodb);
 
-var express = require("express");
+const express = require("express");
 
-var app = express();
-var logger = require('./src/libs/logger')(module);
+const app = express();
+const logger = require('./src/libs/logger')(module);
 
 app.use('/books', require('./src/controllers/bookController'));
 app.use('/users', require('./src/controllers/userController'));

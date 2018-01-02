@@ -16,7 +16,7 @@ exports.issue = function (req, res, next) {
     const number = _.get(req, 'body.number');
     if (!id || !number) return next(httpErrors.createBadRequestError());
 
-    var date = new Date();
+    let date = new Date();
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
     UserModel.findOne({number: number}, function (err, result) {
         if (err) return next(err);
@@ -39,7 +39,7 @@ exports.return = function (req, res, next) {
 };
 
 exports.find = function (req, res, next) {
-    var query = {
+    const query = {
         name: new RegExp(req.body.name, "i"),
         author: new RegExp(req.body.author, "i")
     };
@@ -51,7 +51,7 @@ exports.find = function (req, res, next) {
 
 exports.add = function (req, res, next) {
     if (!req.body.name || !req.body.author) return next(httpErrors.createBadRequestError());
-    var book = new BookModel({
+    const book = new BookModel({
         author: req.body.author,
         name: req.body.name,
         issuedto: null,
