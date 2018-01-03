@@ -1,5 +1,4 @@
-process.env.NODE_ENV = 'test';
-process.env.urlMongodb = 'mongodb://localhost:27017/LibraryTest';
+require('dotenv').config({path: 'test.env'});
 
 const Chance = require('chance');
 const chance = new Chance();

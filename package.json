@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "SET NODE_ENV=dev && node app.js",
+    "start": "node app.js",
     "test": "mocha",
     "test-with-coverage": "nyc --reporter=html --reporter=text mocha",
     "posttest": "nyc check-coverage --lines 79 --functions 56 --branches 34"
