@@ -90,9 +90,9 @@ function deleteBook(id) {
 }
 
 $("#Create").click(function (e) {
-    let form = document.forms["findBooks"];
-    let name = form.elements["bookName"].value;
-    let author = form.elements["author"].value;
+    const form = document.forms["findBooks"];
+    const name = form.elements["bookName"].value;
+    const author = form.elements["author"].value;
     (name) ? $("#nameValid").hide() : $("#nameValid").show();
     (author) ? $("#authorValid").hide() : $("#authorValid").show();
     if (!name || !author) return;
