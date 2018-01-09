@@ -43,3 +43,15 @@ exports.update = (req, res, next) => {
         res.send(result.value);
     });
 };
+
+exports.find = (req, res, next) => {
+    const query = {
+        name: new RegExp(req.body.name, "i"),
+        number: new RegExp(req.body.number, "i"),
+        mail: new RegExp(req.body.mail, "i"),
+    };
+    return UserModel.find(query, (err, users) => {
+        if (err) return next(err);
+        return res.send(users);
+    });
+};

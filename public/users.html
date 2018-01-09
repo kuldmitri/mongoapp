@@ -29,21 +29,24 @@
                         <div>
                             <input id="inputName" class=" form-control" name="name" autocomplete="off"/>
                         </div>
-                        <label style="display: none; color: red" id="nameValid" class="control-label">Введите Имя пользователя</label>
+                        <label style="display: none; color: red" id="nameValid" class="control-label">Введите Имя
+                            пользователя</label>
                     </div>
                     <div class="form-group">
                         <label for="inputNumber" class="control-label">Номер читательского билета:</label>
                         <div>
                             <input id="inputNumber" class="form-control" name="number" autocomplete="off"/>
                         </div>
-                        <label style="display: none; color: red" id="numberValid" class="control-label">Введите номер читательского билета</label>
+                        <label style="display: none; color: red" id="numberValid" class="control-label">Введите номер
+                            читательского билета</label>
                     </div>
                     <div class="form-group">
                         <label for="inputMail" class="control-label">Электронная почта пользователя:</label>
                         <div>
                             <input id="inputMail" class="form-control" name="mail" autocomplete="off"/>
                         </div>
-                        <label style="display: none; color: red" id="mailValid" class="control-label">Введите Электронную почту пользователя</label>
+                        <label style="display: none; color: red" id="mailValid" class="control-label">Введите
+                            Электронную почту пользователя</label>
                     </div>
 
                 </form>
@@ -73,9 +76,6 @@
                 <li><a href="#">Пользователи</a></li>
                 <li><a href="#">Помощь</a></li>
             </ul>
-            <form class="navbar-form navbar-right">
-                <input type="text" class="form-control" placeholder="Search...">
-            </form>
         </div>
     </div>
 </div>
@@ -89,7 +89,28 @@
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <h1 class="page-header">Библиотека</h1>
+            <h1 class="page-header">Работа с базой Пользователи</h1>
+            <form name="searchBar" class="row">
+                <input type="hidden" name="id" value="0"/>
+
+                <div class="col-md-3">
+                    <input id="searchName" class=" form-control" name="name" autocomplete="off"
+                           placeholder="Имя пользователя"/>
+                </div>
+
+                <div class="col-md-2">
+                    <input id="searchNumber" class="form-control" name="number" autocomplete="off" placeholder="Номер билета"/>
+                </div>
+
+                <div class="col-md-3">
+                    <input id="searchMail" class="form-control" name="mail" autocomplete="off" placeholder="Электронная почта"/>
+                </div>
+
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-primary" id="cleanSearch">Очистить</button>
+                    <button type="button" class="btn btn-primary" id="searchUsers">Найти пользователей</button>
+                </div>
+            </form>
             <h2 class="sub-header">Зарегистрированные пользователи</h2>
             <div id="search" class="table-responsive">
                 <script id="template" type="text/x-handlebars-template">
@@ -115,6 +136,13 @@
                             <td><a class="deleteLink" id={{this._id}}> Удалить </a></td>
                         </tr>
                         {{/each}}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><a href="#WindowCreateUsers" class="btn btn-primary" data-toggle="modal">Добавить нового пользователя</a></td>
+                        </tr>
                     </table>
                 </script>
             </div>

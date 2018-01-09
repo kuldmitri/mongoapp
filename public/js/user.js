@@ -44,9 +44,42 @@ $("#ShowUsers").click(function (e) {
     });
 });
 
+$("#cleanSearch").click(function (e) {
+    const form = document.forms["searchBar"];
+    form.elements["searchName"].value = '';
+    form.elements["searchNumber"].value = '';
+    form.elements["searchMail"].value = '';
+});
+
 $("body").on("click", ".deleteLink", function () {
     const id = this.id;
     deleteUser(id);
+});
+
+$("#searchUsers").click(function (e) {
+    const form = document.forms["searchBar"];
+    const name = form.elements["searchName"].value;
+    const number =  form.elements["searchNumber"].value;
+    const mail =  form.elements["searchMail"].value;
+
+    $.ajax({
+        url: "/users/find",
+        contentType: "application/json",
+        method: "POST",
+        data: JSON.stringify({
+            name: name,
+            number: number,
+            mail: mail
+        }),
+        success: function (users) {
+            data.users = users;
+            console.log(users);
+            $('#search').html(template(data));
+        },
+        error: function (error) {
+            alert(error.responseText);
+        }
+    });
 });
 
 function deleteUser(id) {
