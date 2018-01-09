@@ -17,10 +17,10 @@ $("#All").click(function (e) {
 });
 
 
-$("#Find").click(function (e) {
-    var form = document.forms["findBooks"];
-    var name = form.elements["bookName"].value;
-    var author = form.elements["author"].value;
+$("#searchBooks").click(function (e) {
+    const form = document.forms["searchBar"];
+    const name = form.elements["searchName"].value;
+    const author = form.elements["searchAuthor"].value;
 
     $.ajax({
         url: "/books/find",
@@ -89,7 +89,40 @@ function deleteBook(id) {
     $('#All').triggerHandler('click');
 }
 
+
+$("#cleanSearch").click(function (e) {
+    const form = document.forms["searchBar"];
+    form.elements["searchName"].value = '';
+    form.elements["searchAuthor"].value = '';
+});
+
+
+
+
 $("#Create").click(function (e) {
+    const form = document.forms["findBooks"];
+    const name = form.elements["bookName"].value;
+    const author = form.elements["author"].value;
+    (name) ? $("#nameValid").hide() : $("#nameValid").show();
+    (author) ? $("#authorValid").hide() : $("#authorValid").show();
+    if (!name || !author) return;
+    $.ajax({
+        url: "/books/add",
+        contentType: "application/json",
+        method: "POST",
+        data: JSON.stringify({
+            name: name,
+            author: author
+        }),
+        error: function (error) {
+            alert(error.responseText);
+        }
+    });
+    $('#All').triggerHandler('click');
+});
+
+
+$("#addBooks").click(function (e) {
     const form = document.forms["findBooks"];
     const name = form.elements["bookName"].value;
     const author = form.elements["author"].value;

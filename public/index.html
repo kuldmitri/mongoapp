@@ -68,9 +68,6 @@
                 <li><a href="./users.html">Пользователи</a></li>
                 <li><a href="#">Помощь</a></li>
             </ul>
-            <form class="navbar-form navbar-right">
-                <input type="text" class="form-control" placeholder="Search...">
-            </form>
         </div>
     </div>
 </div>
@@ -86,6 +83,22 @@
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
             <h1 class="page-header">Библиотека</h1>
+
+            <form name="searchBar" class="row">
+                <input type="hidden" name="id" value="0"/>
+                <div class="col-md-4">
+                    <input id="searchName" class=" form-control" name="bookName" autocomplete="off" placeholder="Название книги"/>
+                </div>
+                <div class="col-md-4">
+                    <input id="searchAuthor" class="form-control" name="author" autocomplete="off" placeholder="Автор"/>
+                </div>
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-primary" id="cleanSearch">Очистить</button>
+                    <button type="button" class="btn btn-primary" id="searchBooks">Найти книги</button>
+                </div>
+            </form>
+
+
             <h2 class="sub-header">Найденные книги</h2>
             <div id="search" class="table-responsive">
                 <script id="template" type="text/x-handlebars-template">
@@ -120,6 +133,14 @@
                                 <a class="deleteLink" id={{this._id}}> Удалить </a></td>
                         </tr>
                         {{/each}}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><a href="#WindowCreateBooks" class="btn btn-primary" data-toggle="modal">Добавить новую книгу</a></td>
+                        </tr>
                     </table>
                 </script>
             </div>
