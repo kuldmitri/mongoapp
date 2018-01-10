@@ -26,7 +26,7 @@ $("#Create").click(function (e) {
             alert(error.responseText);
         }
     });
-    $('#ShowUsers').triggerHandler('click');
+    $('#searchUsers').triggerHandler('click');
 });
 
 $("#ShowUsers").click(function (e) {
@@ -94,8 +94,8 @@ function deleteUser(id) {
             alert(error.responseText);
         }
     });
-    $('#ShowUsers').triggerHandler('click');
+    $('#searchUsers').triggerHandler('click');
 }
 let data = {};
 let template = Handlebars.compile($('#template').html());
-$('#ShowUsers').triggerHandler('click');
+$('#searchUsers').triggerHandler('click');

@@ -50,13 +50,13 @@ function issueBook(id, number) {
             number: number
         }),
         success: function (result) {
-            if (result == 'Not found') alert('Введенный номер билета не зарегистрирован')
+            if (result === 'Not found') alert('Введенный номер билета не зарегистрирован')
         },
         error: function (error) {
             alert(error.responseText);
         }
     });
-    $('#All').triggerHandler('click');
+    $('#searchBooks').triggerHandler('click');
 }
 
 function returnBook(id) {
@@ -71,7 +71,7 @@ function returnBook(id) {
             alert(error.responseText);
         }
     });
-    $('#All').triggerHandler('click');
+    $('#searchBooks').triggerHandler('click');
 }
 
 function deleteBook(id) {
@@ -86,7 +86,7 @@ function deleteBook(id) {
             alert(error.responseText);
         }
     });
-    $('#All').triggerHandler('click');
+    $('#searchBooks').triggerHandler('click');
 }
 
 
@@ -118,7 +118,7 @@ $("#Create").click(function (e) {
             alert(error.responseText);
         }
     });
-    $('#All').triggerHandler('click');
+    $('#searchBooks').triggerHandler('click');
 });
 
 
@@ -141,7 +141,7 @@ $("#addBooks").click(function (e) {
             alert(error.responseText);
         }
     });
-    $('#All').triggerHandler('click');
+    $('#searchBooks').triggerHandler('click');
 });
 
 
@@ -149,7 +149,7 @@ $("body").on("click", ".issueLink", function () {
     var id = this.id;
     var number = prompt('Введите номер читательского билета абонента, которому будет выдана книга');
     issueBook(id, number);
-    $('#All').triggerHandler('click');
+    $('#searchBooks').triggerHandler('click');
 });
 
 $("body").on("click", ".returnLink", function () {
@@ -164,4 +164,4 @@ $("body").on("click", ".deleteLink", function () {
 
 var data = {};
 var template = Handlebars.compile($('#template').html());
-$('#All').triggerHandler('click');
+$('#searchBooks').triggerHandler('click');
