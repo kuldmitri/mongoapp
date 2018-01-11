@@ -1,12 +1,34 @@
-var router = require('express').Router();
-var user = require('../models/userModel.js');
-var bodyParser = require("body-parser");
-var jsonParser = bodyParser.json();
+const router = require('express').Router();
+const user = require('../models/userModel.js');
+const bodyParser = require("body-parser");
+const jsonParser = bodyParser.json();
 
-router.get("/", user.get);
-router.post("/update", jsonParser, user.update);
-router.post("/add", jsonParser, user.add);
-router.post("/delete", jsonParser, user.delete);
-router.post("/find", jsonParser, user.find);
+router.get("/all", jsonParser, (req, res, next) => {
+    user.all((err, doc) => {
+        if (err) return next(err);
+        res.send(doc);
+    })
+});
+
+router.post("/add", jsonParser, (req, res, next) => {
+    user.add(req.body, (err, doc) => {
+        if (err) return next(err);
+        res.send(doc);
+    })
+});
+
+router.post("/delete", jsonParser, (req, res, next) => {
+    user.delete(req.body, (err, doc) => {
+        if (err) return next(err);
+        res.send(doc);
+    })
+});
+
+router.post("/find", jsonParser, (req, res, next) => {
+    user.find(req.body, (err, doc) => {
+        if (err) return next(err);
+        res.send(doc);
+    })
+});
 
 module.exports = router;

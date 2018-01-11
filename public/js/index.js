@@ -50,13 +50,12 @@ function issueBook(id, number) {
             number: number
         }),
         success: function (result) {
-            if (result === 'Not found') alert('Введенный номер билета не зарегистрирован')
+            $('#searchBooks').triggerHandler('click');
         },
         error: function (error) {
             alert(error.responseText);
         }
     });
-    $('#searchBooks').triggerHandler('click');
 }
 
 function returnBook(id) {
@@ -69,9 +68,10 @@ function returnBook(id) {
         }),
         error: function (error) {
             alert(error.responseText);
+        }, success: function (result) {
+            $('#searchBooks').triggerHandler('click');
         }
     });
-    $('#searchBooks').triggerHandler('click');
 }
 
 function deleteBook(id) {
@@ -82,11 +82,13 @@ function deleteBook(id) {
         data: JSON.stringify({
             id: id
         }),
+        success: function (result) {
+            $('#searchBooks').triggerHandler('click');
+        },
         error: function (error) {
             alert(error.responseText);
         }
     });
-    $('#searchBooks').triggerHandler('click');
 }
 
 

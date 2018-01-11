@@ -4,69 +4,55 @@ const BookModel = require('../db/bookShema').BookModel;
 const UserModel = require('../db/userShema').UserModel;
 const httpErrors = require('../utils/httpErrors');
 
-exports.get = function (req, res, next) {
-    BookModel.find(function (err, books) {
-        if (err) return next(err);
-        return res.send(books);
+exports.all = (cb) => {
+    BookModel.find((err, doc) => {
+        cb(err, doc);
     });
 };
 
-exports.issue = function (req, res, next) {
-    const id = _.get(req, 'body.id');
-    const number = _.get(req, 'body.number');
-    if (!id || !number) return next(httpErrors.createBadRequestError());
+exports.issue = (obj, cb) => {
+    const id = _.get(obj, 'id');
+    const number = _.get(obj, 'number');
+    if (!id || !number) return cb(httpErrors.createBadRequestError(), null);
 
     let date = new Date();
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-    UserModel.findOne({number: number}, function (err, result) {
-        if (err) return next(err);
-        if (!result) {
-            return res.send('Not found');
-        }
-        BookModel.findByIdAndUpdate(id, {issued: date, issuedto: result._id}, {new: true}, function (err, book) {
-            if (err) return next(err);
-            res.send({book});
+    UserModel.findOne({number: number}, (err, doc) => {
+        if (err) return cb(err, null);
+        if (!doc) return cb(httpErrors.createNotFoundNumberError(number), null);
+        BookModel.findByIdAndUpdate(id, {issued: date, issuedto: doc._id}, {new: true}, (err, doc) => {
+            cb(err, doc);
         });
     });
 };
 
-exports.return = function (req, res, next) {
-    if (!req.body.id) return next(httpErrors.createBadRequestError());
-    BookModel.findByIdAndUpdate(req.body.id, {issued: null, issuedto: null}, {new: true}, function (err, result) {
-        if (err) return next(err);
-        res.send({book: result._doc});
+exports.return = (obj, cb) => {
+    if (!obj.id) return cb(httpErrors.createBadRequestError(), null);
+    BookModel.findByIdAndUpdate(obj.id, {issued: null, issuedto: null}, {new: true}, (err, doc) => {
+        cb(err, doc);
     });
 };
 
-exports.find = function (req, res, next) {
+exports.find = (obj, cb) => {
     const query = {
-        name: new RegExp(req.body.name, "i"),
-        author: new RegExp(req.body.author, "i")
+        name: new RegExp(obj.name, "i"),
+        author: new RegExp(obj.author, "i")
     };
-    BookModel.find(query, function (err, books) {
-        if (err) return next(err);
-        res.send(books);
+    BookModel.find(query, (err, doc) => {
+        cb(err, doc);
     });
 };
 
-exports.add = function (req, res, next) {
-    if (!req.body.name || !req.body.author) return next(httpErrors.createBadRequestError());
-    const book = new BookModel({
-        author: req.body.author,
-        name: req.body.name,
-        issuedto: null,
-        issued: req.body.issued
-    });
-    book.save(function (err) {
-        if (err) return next(err);
-        res.send({book});
+exports.add = (obj, cb) => {
+    if (!obj.name || !obj.author) return cb(httpErrors.createBadRequestError(), null);
+    BookModel.create(obj, (err, doc) => {
+        cb(err, doc);
     });
 };
 
-exports.delete = function (req, res, next) {
-    if (!req.body.id) return next(httpErrors.createBadRequestError());
-    BookModel.findByIdAndRemove(req.body.id, function (err, result) {
-        if (err) return next(err);
-        res.send(result.value);
+exports.delete = (obj, cb) => {
+    if (!obj.id) return cb(httpErrors.createBadRequestError(), null);
+    BookModel.findByIdAndRemove(obj.id, (err, doc) => {
+        cb(err, doc);
     });
 };

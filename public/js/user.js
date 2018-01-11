@@ -1,6 +1,3 @@
-/**
- * Created by dmitr on 08.01.2018.
- */
 $("#Create").click(function (e) {
     //  e.preventDefault();
     const form = document.forms["createUser"];
@@ -22,21 +19,8 @@ $("#Create").click(function (e) {
             name: name,
             mail: mail
         }),
-        error: function (error) {
-            alert(error.responseText);
-        }
-    });
-    $('#searchUsers').triggerHandler('click');
-});
-
-$("#ShowUsers").click(function (e) {
-    $.ajax({
-        url: "/users",
-        type: "GET",
-        contentType: "application/json",
-        success: function (users) {
-            data.users = users;
-            $('#search').html(template(data));
+        success: function (result) {
+            $('#searchUsers').triggerHandler('click');
         },
         error: function (error) {
             alert(error.responseText);
@@ -90,12 +74,15 @@ function deleteUser(id) {
         data: JSON.stringify({
             id: id
         }),
+        success: function (result) {
+            $('#searchUsers').triggerHandler('click');
+        },
         error: function (error) {
             alert(error.responseText);
         }
     });
-    $('#searchUsers').triggerHandler('click');
 }
+
 let data = {};
 let template = Handlebars.compile($('#template').html());
 $('#searchUsers').triggerHandler('click');

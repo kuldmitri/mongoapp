@@ -4,10 +4,14 @@ function httpError(message, status) {
     return err;
 };
 
-exports.createBadRequestError = function(){
+exports.createBadRequestError = function () {
     return httpError('Invalid request data', 400);
 };
 
-exports.createUnprocessableEntityError = function(message){
-    return httpError(message,422);
+exports.createUnprocessableEntityError = function (message) {
+    return httpError(message, 422);
+};
+
+exports.createNotFoundNumberError = function (number) {
+    return httpError('Not Found number ' + number, 421);
 };

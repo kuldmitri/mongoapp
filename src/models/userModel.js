@@ -2,56 +2,33 @@ const logger = require('../libs/logger')(module);
 const UserModel = require('../db/userShema').UserModel;
 const httpErrors = require('../utils/httpErrors');
 
-exports.get = (req, res, next) => {
-    return UserModel.find((err, users) => {
-        if (err) return next(err);
-        return res.send(users);
+exports.all = (cb) => {
+    UserModel.find((err, doc) => {
+        cb(err, doc);
     });
 };
 
-exports.add = (req, res, next) => {
-    if (!req.body.number || !req.body.name || !req.body.mail) return next(httpErrors.createBadRequestError());
-    var user = new UserModel({
-        number: req.body.number,
-        name: req.body.name,
-        mail: req.body.mail
-    });
-    user.save((err) => {
-        if (err) return next(err);
-        logger.debug('User add', {user});
-        return res.send({user});
+exports.add = (obj, cb) => {
+    if (!obj.number || !obj.name || !obj.mail) return cb(httpErrors.createBadRequestError(),null);
+    UserModel.create(obj, (err, doc) => {
+        cb(err, doc);
     });
 };
 
-exports.delete = (req, res, next) => {
-    if (!req.body.id) return next(httpErrors.createBadRequestError());
-    UserModel.findByIdAndRemove(req.body.id, (err, result) => {
-        if (err) return next(err);
-        res.send(result._doc);
+exports.delete = (obj, cb) => {
+    if (!obj.id) return cb(httpErrors.createBadRequestError(), null);
+    UserModel.findByIdAndRemove(obj.id, (err, doc) => {
+        cb(err, doc);
     });
 };
 
-exports.update = (req, res, next) => {
-    if (!req.body.id) return next(httpErrors.createBadRequestError());
-    var user = new UserModel({
-        number: req.body.number,
-        name: req.body.name,
-        mail: req.body.mail
-    });
-    UserModel.findOneAndUpdate(req.body.id, user, (err, result) => {
-        if (err) return next(err);
-        res.send(result.value);
-    });
-};
-
-exports.find = (req, res, next) => {
+exports.find = (obj, cb) => {
     const query = {
-        name: new RegExp(req.body.name, "i"),
-        number: new RegExp(req.body.number, "i"),
-        mail: new RegExp(req.body.mail, "i"),
+        name: new RegExp(obj.name, "i"),
+        number: new RegExp(obj.number, "i"),
+        mail: new RegExp(obj.mail, "i"),
     };
-    return UserModel.find(query, (err, users) => {
-        if (err) return next(err);
-        return res.send(users);
+    UserModel.find(query, (err, doc) => {
+        cb(err, doc);
     });
 };
