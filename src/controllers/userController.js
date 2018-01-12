@@ -13,14 +13,14 @@ router.get("/all", jsonParser, (req, res, next) => {
 router.post("/add", jsonParser, (req, res, next) => {
     user.add(req.body, (err, doc) => {
         if (err) return next(err);
-        res.send(doc);
+        res.send({user: doc});
     })
 });
 
 router.post("/delete", jsonParser, (req, res, next) => {
     user.delete(req.body, (err, doc) => {
         if (err) return next(err);
-        res.send(doc);
+        res.send({user: doc});
     })
 });
 

@@ -23,7 +23,7 @@ describe('User Tests', () => {
 
     it('it should GET an empty array books for clear database', (done) => {
         chai.request(app)
-            .get('/users')
+            .get('/users/all')
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('array');
@@ -88,7 +88,7 @@ describe('User Tests', () => {
 
         it('it should GET users', (done) => {
             chai.request(app)
-                .get('/users')
+                .get('/users/all')
                 .end((err, res) => {
                     should.not.exist(err);
                     res.should.have.status(200);
@@ -120,10 +120,10 @@ describe('User Tests', () => {
                     .send({id: user._id})
                     .end(function (err, res) {
                         res.should.have.status(200);
-                        res.body.should.be.a('object');
-                        res.body.should.have.property('name').eql(user.name);
-                        res.body.should.have.property('number').eql(user.number);
-                        res.body.should.have.property('mail').eql(user.mail);
+                        res.body.user.should.be.a('object');
+                        res.body.user.should.have.property('name').eql(user.name);
+                        res.body.user.should.have.property('number').eql(user.number);
+                        res.body.user.should.have.property('mail').eql(user.mail);
                         done();
                     });
             });

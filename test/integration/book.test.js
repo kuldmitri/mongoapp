@@ -31,7 +31,7 @@ describe('Book Tests', () => {
 
     it('it should GET an empty array books for clear database', (done) => {
         chai.request(app)
-            .get('/books')
+            .get('/books/all')
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('array');
@@ -58,7 +58,7 @@ describe('Book Tests', () => {
     it('it should create a book ', (done) => {
         let book = {
             name: chance.sentence({words: 4}),
-            author: chance.first() +' '+ chance.last()
+            author: chance.first() + ' ' + chance.last()
         };
         chai.request(app)
             .post('/books/add')
@@ -76,7 +76,10 @@ describe('Book Tests', () => {
         let books;
         beforeEach('create several books', (done) => {
             async.timesSeries(3, (n, cb) => {
-                const book = new Book({name: chance.sentence({words: 4}) , author: chance.first() +' '+ chance.last()});
+                const book = new Book({
+                    name: chance.sentence({words: 4}),
+                    author: chance.first() + ' ' + chance.last()
+                });
                 book.save((err, result) => {
                     should.not.exist(err);
                     cb(null, JSON.parse(JSON.stringify(result._doc)));
@@ -89,7 +92,7 @@ describe('Book Tests', () => {
 
         it('it should GET books', (done) => {
             chai.request(app)
-                .get('/books')
+                .get('/books/all')
                 .end((err, res) => {
                     should.not.exist(err);
                     res.should.have.status(200);
@@ -145,7 +148,11 @@ describe('Book Tests', () => {
         describe('when a user is created', () => {
             let user;
             beforeEach('create a user', (done) => {
-                const userModel = new User({name: chance.first() +' '+ chance.last(), number: "1", mail: chance.email()});
+                const userModel = new User({
+                    name: chance.first() + ' ' + chance.last(),
+                    number: "1",
+                    mail: chance.email()
+                });
                 userModel.save((err, result) => {
                     should.not.exist(err);
                     user = JSON.parse(JSON.stringify(result._doc));

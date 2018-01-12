@@ -46,6 +46,7 @@ exports.find = (obj, cb) => {
 exports.add = (obj, cb) => {
     if (!obj.name || !obj.author) return cb(httpErrors.createBadRequestError(), null);
     BookModel.create(obj, (err, doc) => {
+        console.log(doc);
         cb(err, doc);
     });
 };
@@ -53,6 +54,7 @@ exports.add = (obj, cb) => {
 exports.delete = (obj, cb) => {
     if (!obj.id) return cb(httpErrors.createBadRequestError(), null);
     BookModel.findByIdAndRemove(obj.id, (err, doc) => {
+        console.log(doc);
         cb(err, doc);
     });
 };
