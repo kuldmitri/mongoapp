@@ -10,7 +10,7 @@ const chaiHttp = require('chai-http');
 const app = require('../../app');
 const should = chai.should();
 const User = require('../../src/db/userShema.js').UserModel;
-const user = require('../../src/models/userModel.js');
+const user = require('../../src/services/userService.js');
 
 chai.use(chaiHttp);
 describe('User Tests', () => {

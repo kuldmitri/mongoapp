@@ -11,7 +11,7 @@ const app = require('../../app');
 const should = chai.should();
 const Book = require('../../src/db/bookShema.js').BookModel;
 const User = require('../../src/db/userShema.js').UserModel;
-const book = require('../../src/models/bookModel.js');
+const book = require('../../src/services/bookService.js');
 
 chai.use(chaiHttp);
 describe('Book Tests', () => {

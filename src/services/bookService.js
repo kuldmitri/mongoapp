@@ -6,6 +6,7 @@ const httpErrors = require('../utils/httpErrors');
 
 exports.all = (cb) => {
     BookModel.find((err, doc) => {
+
         cb(err, doc);
     });
 };

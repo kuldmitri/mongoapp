@@ -33,6 +33,7 @@ $("#searchBooks").click(function (e) {
         success: function (books) {
             data.books = books;
             $('#search').html(template(data));
+            console.log(data);
         },
         error: function (error) {
             alert(error.responseText);

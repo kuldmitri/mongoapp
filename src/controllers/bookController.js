@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const book = require('../models/bookModel.js');
+const book = require('../services/bookService.js');
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 
