@@ -31,7 +31,7 @@ describe('Book Tests', () => {
     });
 
     it('it should GET an empty array books for clear database', (done) => {
-        bookService.all((err, doc) => {
+        bookService.findAll((err, doc) => {
             doc.should.be.a('array');
             doc.length.should.be.eql(0);
             done();
@@ -43,9 +43,8 @@ describe('Book Tests', () => {
             name: '',
             author: 'petrow'
         };
-        bookService.add(obj, (err, doc) => {
-            err.status.should.eql(400);
-            err.message.should.eql('Invalid request data');
+        bookService.addNewBook(obj, (err, doc) => {
+            err.name.should.eql('ValidationError');
             done();
         });
     });
@@ -55,7 +54,7 @@ describe('Book Tests', () => {
             name: chance.sentence({words: 4}),
             author: chance.first() + ' ' + chance.last()
         };
-        bookService.add(obj, (err, doc) => {
+        bookService.addNewBook(obj, (err, doc) => {
             doc.should.be.a('object');
             doc.should.have.property('name').eql(obj.name);
             doc.should.have.property('author').eql(obj.author);
@@ -71,7 +70,7 @@ describe('Book Tests', () => {
                     name: chance.sentence({words: 4}),
                     author: chance.first() + ' ' + chance.last()
                 };
-                bookService.add(obj, (err, result) => {
+                bookService.addNewBook(obj, (err, result) => {
                     should.not.exist(err);
                     cb(null, JSON.parse(JSON.stringify(result._doc)));
                 });
@@ -82,7 +81,7 @@ describe('Book Tests', () => {
         });
 
         it('it should GET books', (done) => {
-            bookService.all((err, doc) => {
+            bookService.findAll((err, doc) => {
                 let arr = [doc[0]._doc, doc[1]._doc, doc[2]._doc];
                 arr[0]._id = arr[0]._id.toString();
                 arr[1]._id = arr[1]._id.toString();
@@ -143,7 +142,7 @@ describe('Book Tests', () => {
                     number: "1",
                     mail: chance.email()
                 };
-                userService.add(obj, (err, result) => {
+                userService.addUser(obj, (err, result) => {
                     should.not.exist(err);
                     userDB = JSON.parse(JSON.stringify(result._doc));
                     done();
@@ -151,7 +150,7 @@ describe('Book Tests', () => {
             });
 
             it('it should issue a book to user given the id', (done) => {
-                bookService.issue({id: books[0]._id, number: userDB.number}, (err, doc) => {
+                bookService.issueBook({id: books[0]._id, number: userDB.number}, (err, doc) => {
                     should.not.exist(err);
                     doc.should.be.a('object');
                     doc.should.have.property('issued');
@@ -162,17 +161,14 @@ describe('Book Tests', () => {
 
             describe('when a book is issued', () => {
                 beforeEach('issue a book', (done) => {
-                    chai.request(app)
-                        .post('/books/issue')
-                        .send({id: books[0]._id, number: userDB.number})
-                        .end((err) => {
-                            should.not.exist(err);
-                            done();
-                        });
+                    bookService.issueBook({id: books[0]._id, number: userDB.number}, (err, doc) => {
+                        should.not.exist(err);
+                        done();
+                    });
                 });
 
                 it('it should set a book as unissued', function (done) {
-                    bookService.return({id: books[0]._id}, (err, doc) => {
+                    bookService.returnBook({id: books[0]._id}, (err, doc) => {
                         doc.should.be.a('object');
                         doc.should.have.property('issued').eql(null);
                         doc.should.have.property('issuedto').eql(null);

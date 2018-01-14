@@ -22,7 +22,7 @@ describe('User Tests', () => {
     });
 
     it('it should GET an empty array books for clear database', (done) => {
-        userService.all((err, doc) => {
+        userService.findAll((err, doc) => {
             doc.should.be.a('array');
             doc.length.should.be.eql(0);
             done();
@@ -34,7 +34,7 @@ describe('User Tests', () => {
             name: '',
             author: 'petrow'
         };
-        userService.add(obj, (err, doc) => {
+        userService.addUser(obj, (err, doc) => {
             err.status.should.eql(400);
             err.message.should.eql('Invalid request data');
             done();
@@ -47,17 +47,13 @@ describe('User Tests', () => {
             number: chance.integer().toString(),
             mail: chance.email()
         };
-        chai.request(app)
-            .post('/users/add')
-            .send(user)
-            .end(function (err, res) {
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-                res.body.user.should.have.property('name').eql(user.name);
-                res.body.user.should.have.property('number').eql(user.number);
-                res.body.user.should.have.property('mail').eql(user.mail);
-                done();
-            });
+        userService.addUser(user, (err, doc) => {
+            doc.should.be.a('object');
+            doc.should.have.property('name').eql(user.name);
+            doc.should.have.property('number').eql(user.number);
+            doc.should.have.property('mail').eql(user.mail);
+            done();
+        })
     });
 
     describe('when several users are created', () => {
@@ -89,13 +85,13 @@ describe('User Tests', () => {
                 .post('/users/add')
                 .send(user)
                 .end(function (err, res) {
-                    res.should.have.status(500);
+                    res.should.have.status(400);
                     done();
                 });
         });
 
         it('it should GET users', (done) => {
-            userService.all((err, doc) => {
+            userService.findAll((err, doc) => {
                 let arr = [doc[0]._doc, doc[1]._doc, doc[2]._doc];
                 arr[0]._id = arr[0]._id.toString();
                 arr[1]._id = arr[1]._id.toString();
@@ -111,7 +107,7 @@ describe('User Tests', () => {
 
         it('it should delete a user ', (done) => {
             const userDB = users[0];
-            userService.delete({id: userDB._id}, (err, doc) => {
+            userService.deleteUser({id: userDB._id}, (err, doc) => {
                 doc.should.be.a('object');
                 doc.should.have.property('name').eql(userDB.name);
                 doc.should.have.property('number').eql(userDB.number);

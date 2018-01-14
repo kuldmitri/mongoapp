@@ -50,7 +50,7 @@ describe('Book Tests', () => {
             .send(book)
             .end((err, res) => {
                 res.should.have.status(400);
-                res.text.should.eql('Invalid request data');
+                res.text.should.eql('Book validation failed: name: Path `name` is required.');
                 done();
             });
     });

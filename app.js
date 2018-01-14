@@ -1,5 +1,4 @@
 require('dotenv').config();
-console.log('process.env.NODE_ENV = ' + process.env.NODE_ENV);
 console.log('process.env.port = ' + process.env.port);
 console.log('process.env.urlMongodb = ' + process.env.urlMongodb);
 
@@ -19,6 +18,9 @@ app.listen(process.env.port, () => {
 
 app.use((err, req, res, next) => {
     logger.error({error: err.message});
+    if (err.name === 'MongoError' || err.name === 'ValidationError') {
+        err.status = 400;
+    }
     if (!err.status) {
         res.status(500);
         res.send('Houston, we have a problem');
