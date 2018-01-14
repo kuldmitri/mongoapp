@@ -49,7 +49,7 @@ describe('Book Tests', () => {
             .post('/books/add')
             .send(book)
             .end((err, res) => {
-                res.should.have.status(400);
+                res.should.have.status(422);
                 res.text.should.eql('Book validation failed: name: Path `name` is required.');
                 done();
             });

@@ -17,16 +17,29 @@ app.listen(process.env.port, () => {
 });
 
 app.use((err, req, res, next) => {
-    logger.error({error: err.message});
-    if (err.name === 'MongoError' || err.name === 'ValidationError') {
-        err.status = 400;
-    }
-    if (!err.status) {
-        res.status(500);
-        res.send('Houston, we have a problem');
-    } else {
-        res.status(err.status);
-        res.send(err.message);
+    logger.error(err);
+    switch (err.name) {
+        case 'MongoError':
+            res.status(422);
+            if (err.message.match('E11000 duplicate key error collection') && err.message.indexOf('number') > 0) {
+                res.send('Данный номер читательского билета уже зарегистрирован ');
+            } else {
+                res.send(err.message);
+            }
+            break;
+        case 'ValidationError':
+            res.status(422);
+            res.send(err.message);
+            break;
+        default:
+            if (!err.status) {
+                res.status(500);
+                res.send('Houston, we have a problem');
+            } else {
+                res.status(err.status);
+                res.send(err.message);
+            }
+            break;
     }
 });
 

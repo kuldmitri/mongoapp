@@ -5,7 +5,7 @@ const UserModel = require('../db/userShema').UserModel;
 const httpErrors = require('../utils/httpErrors');
 
 exports.findAll = (cb) => {
-    BookModel.findAll(cb);
+    BookModel.find({}, cb);
 };
 
 exports.issueBook = (obj, cb) => {
@@ -25,7 +25,7 @@ exports.issueBook = (obj, cb) => {
 };
 
 exports.returnBook = (obj, cb) => {
-    BookModel.returnBook(obj, cb);
+    BookModel.returnBook(obj.id, cb);
 };
 
 exports.findByNameAndAuthor = (obj, cb) => {
@@ -33,9 +33,9 @@ exports.findByNameAndAuthor = (obj, cb) => {
 };
 
 exports.addNewBook = (obj, cb) => {
-    BookModel.addNewBook(obj, cb);
+    BookModel.create(obj, cb);
 };
 
 exports.deleteBook = (obj, cb) => {
-    BookModel.deleteBook(obj, cb);
+    BookModel.findByIdAndRemove(obj.id, cb);
 };

@@ -35,8 +35,7 @@ describe('User Tests', () => {
             author: 'petrow'
         };
         userService.addUser(obj, (err, doc) => {
-            err.status.should.eql(400);
-            err.message.should.eql('Invalid request data');
+            err.name.should.eql('ValidationError');
             done();
         });
     });
@@ -85,7 +84,8 @@ describe('User Tests', () => {
                 .post('/users/add')
                 .send(user)
                 .end(function (err, res) {
-                    res.should.have.status(400);
+                    res.should.have.status(422);
+                    res.text.should.be.eql('Данный номер читательского билета уже зарегистрирован ');
                     done();
                 });
         });

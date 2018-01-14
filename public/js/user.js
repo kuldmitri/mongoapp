@@ -23,6 +23,7 @@ $("#Create").click(function (e) {
             $('#searchUsers').triggerHandler('click');
         },
         error: function (error) {
+
             alert(error.responseText);
         }
     });

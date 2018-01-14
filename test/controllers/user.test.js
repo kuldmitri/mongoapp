@@ -42,8 +42,8 @@ describe('User Tests', () => {
             .post('/users/add')
             .send(user)
             .end((err, res) => {
-                res.should.have.status(400);
-                res.text.should.eql('Invalid request data');
+                res.should.have.status(422);
+                res.text.should.eql('User validation failed: name: Path `name` is required.');
                 done();
             });
     });
