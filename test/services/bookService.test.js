@@ -11,8 +11,8 @@ const app = require('../../app');
 const should = chai.should();
 const Book = require('../../src/db/bookShema.js').BookModel;
 const User = require('../../src/db/userShema.js').UserModel;
-const book = require('../../src/services/bookService.js');
-const user = require('../../src/services/userService.js');
+const bookService = require('../../src/services/bookService.js');
+const userService = require('../../src/services/userService.js');
 
 chai.use(chaiHttp);
 describe('Book Tests', () => {
@@ -31,7 +31,7 @@ describe('Book Tests', () => {
     });
 
     it('it should GET an empty array books for clear database', (done) => {
-        book.all((err, doc) => {
+        bookService.all((err, doc) => {
             doc.should.be.a('array');
             doc.length.should.be.eql(0);
             done();
@@ -43,7 +43,7 @@ describe('Book Tests', () => {
             name: '',
             author: 'petrow'
         };
-        book.add(obj, (err, doc) => {
+        bookService.add(obj, (err, doc) => {
             err.status.should.eql(400);
             err.message.should.eql('Invalid request data');
             done();
@@ -55,7 +55,7 @@ describe('Book Tests', () => {
             name: chance.sentence({words: 4}),
             author: chance.first() + ' ' + chance.last()
         };
-        book.add(obj, (err, doc) => {
+        bookService.add(obj, (err, doc) => {
             doc.should.be.a('object');
             doc.should.have.property('name').eql(obj.name);
             doc.should.have.property('author').eql(obj.author);
@@ -71,7 +71,7 @@ describe('Book Tests', () => {
                     name: chance.sentence({words: 4}),
                     author: chance.first() + ' ' + chance.last()
                 };
-                book.add(obj, (err, result) => {
+                bookService.add(obj, (err, result) => {
                     should.not.exist(err);
                     cb(null, JSON.parse(JSON.stringify(result._doc)));
                 });
@@ -82,7 +82,7 @@ describe('Book Tests', () => {
         });
 
         it('it should GET books', (done) => {
-            book.all((err, doc) => {
+            bookService.all((err, doc) => {
                 let arr = [doc[0]._doc, doc[1]._doc, doc[2]._doc];
                 arr[0]._id = arr[0]._id.toString();
                 arr[1]._id = arr[1]._id.toString();
@@ -97,7 +97,7 @@ describe('Book Tests', () => {
         });
 
         it('it should find books by name', (done) => {
-            book.find({name: books[0].name}, (err, doc) => {
+            bookService.findByNameAndAuthor({name: books[0].name}, (err, doc) => {
                 let arr = [doc[0]._doc];
                 arr[0]._id = arr[0]._id.toString();
 
@@ -110,7 +110,7 @@ describe('Book Tests', () => {
         });
 
         it('it should find books by author', (done) => {
-            book.find({author: books[1].author}, (err, doc) => {
+            bookService.findByNameAndAuthor({author: books[1].author}, (err, doc) => {
                 let arr = [doc[0]._doc];
                 arr[0]._id = arr[0]._id.toString();
 
@@ -123,7 +123,7 @@ describe('Book Tests', () => {
         });
 
         it('it should find books by name and author', (done) => {
-            book.find({name: books[2].name, author: books[2].author}, (err, doc) => {
+            bookService.findByNameAndAuthor({name: books[2].name, author: books[2].author}, (err, doc) => {
                 let arr = [doc[0]._doc];
                 arr[0]._id = arr[0]._id.toString();
 
@@ -143,7 +143,7 @@ describe('Book Tests', () => {
                     number: "1",
                     mail: chance.email()
                 };
-                user.add(obj, (err, result) => {
+                userService.add(obj, (err, result) => {
                     should.not.exist(err);
                     userDB = JSON.parse(JSON.stringify(result._doc));
                     done();
@@ -151,7 +151,7 @@ describe('Book Tests', () => {
             });
 
             it('it should issue a book to user given the id', (done) => {
-                book.issue({id: books[0]._id, number: userDB.number}, (err, doc) => {
+                bookService.issue({id: books[0]._id, number: userDB.number}, (err, doc) => {
                     should.not.exist(err);
                     doc.should.be.a('object');
                     doc.should.have.property('issued');
@@ -172,7 +172,7 @@ describe('Book Tests', () => {
                 });
 
                 it('it should set a book as unissued', function (done) {
-                    book.return({id: books[0]._id}, (err, doc) => {
+                    bookService.return({id: books[0]._id}, (err, doc) => {
                         doc.should.be.a('object');
                         doc.should.have.property('issued').eql(null);
                         doc.should.have.property('issuedto').eql(null);

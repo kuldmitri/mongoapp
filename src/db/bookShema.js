@@ -1,14 +1,22 @@
-var mongoose = require('./mongoose');
-var logger = require('../libs/logger')(module);
-var Schema = mongoose.Schema;
+const mongoose = require('./mongoose');
+const logger = require('../libs/logger')(module);
+const Schema = mongoose.Schema;
 
-var Book = new Schema({
+const BookSchema = new Schema({
     name: {type: String, required: true},
     author: {type: String, required: true},
     issuedto: {type: Schema.ObjectId},
     issued: {type: String}
 });
 
-var BookModel = mongoose.model('Book', Book);
+BookSchema.statics.findByNameAndAuthor = function(name, authorName, cb) {
+    const query = {
+        name: new RegExp(name, "i"),
+        author: new RegExp(authorName, "i")
+    };
+    return this.find(query, cb);
+};
+
+const BookModel = mongoose.model('Book', BookSchema);
 
 module.exports.BookModel = BookModel;

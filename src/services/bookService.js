@@ -6,7 +6,6 @@ const httpErrors = require('../utils/httpErrors');
 
 exports.all = (cb) => {
     BookModel.find((err, doc) => {
-
         cb(err, doc);
     });
 };
@@ -18,11 +17,11 @@ exports.issue = (obj, cb) => {
 
     let date = new Date();
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-    UserModel.findOne({number: number}, (err, doc) => {
+    UserModel.findOne({number: number}, (err, {_id}) => {
         if (err) return cb(err, null);
-        if (!doc) return cb(httpErrors.createNotFoundNumberError(number), null);
-        BookModel.findByIdAndUpdate(id, {issued: date, issuedto: doc._id}, {new: true}, (err, doc) => {
-            cb(err, doc);
+        if (!_id) return cb(httpErrors.createNotFoundNumberError(number), null);
+        BookModel.findByIdAndUpdate(id, {issued: date, issuedto: _id}, {new: true}, (err, book) => {
+            cb(err, book);
         });
     });
 };
@@ -34,14 +33,8 @@ exports.return = (obj, cb) => {
     });
 };
 
-exports.find = (obj, cb) => {
-    const query = {
-        name: new RegExp(obj.name, "i"),
-        author: new RegExp(obj.author, "i")
-    };
-    BookModel.find(query, (err, doc) => {
-        cb(err, doc);
-    });
+exports.findByNameAndAuthor = (obj, cb) => {
+    BookModel.findByNameAndAuthor(obj.name, obj.author, cb);
 };
 
 exports.add = (obj, cb) => {

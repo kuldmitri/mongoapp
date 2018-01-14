@@ -10,7 +10,7 @@ const chaiHttp = require('chai-http');
 const app = require('../../app');
 const should = chai.should();
 const User = require('../../src/db/userShema.js').UserModel;
-const user = require('../../src/services/userService.js');
+const userService = require('../../src/services/userService.js');
 
 chai.use(chaiHttp);
 describe('User Tests', () => {
@@ -22,7 +22,7 @@ describe('User Tests', () => {
     });
 
     it('it should GET an empty array books for clear database', (done) => {
-        user.all((err, doc) => {
+        userService.all((err, doc) => {
             doc.should.be.a('array');
             doc.length.should.be.eql(0);
             done();
@@ -34,7 +34,7 @@ describe('User Tests', () => {
             name: '',
             author: 'petrow'
         };
-        user.add(obj, (err, doc) => {
+        userService.add(obj, (err, doc) => {
             err.status.should.eql(400);
             err.message.should.eql('Invalid request data');
             done();
@@ -79,8 +79,23 @@ describe('User Tests', () => {
             });
         });
 
+        it('it should NOT create a user if number already exist', (done) => {
+            let user = {
+                name: chance.first() + ' ' + chance.last(),
+                number: users[0].number,
+                mail: chance.email()
+            };
+            chai.request(app)
+                .post('/users/add')
+                .send(user)
+                .end(function (err, res) {
+                    res.should.have.status(500);
+                    done();
+                });
+        });
+
         it('it should GET users', (done) => {
-            user.all((err, doc) => {
+            userService.all((err, doc) => {
                 let arr = [doc[0]._doc, doc[1]._doc, doc[2]._doc];
                 arr[0]._id = arr[0]._id.toString();
                 arr[1]._id = arr[1]._id.toString();
@@ -94,29 +109,14 @@ describe('User Tests', () => {
             });
         });
 
-        describe('when a user is created', () => {
-            let userDB;
-            beforeEach('create a user', (done) => {
-                const userModel = new User({
-                    name: chance.first() + ' ' + chance.last(),
-                    number: "1",
-                    mail: chance.email()
-                });
-                userModel.save((err, result) => {
-                    should.not.exist(err);
-                    userDB = JSON.parse(JSON.stringify(result._doc));
-                    done();
-                });
-            });
-
-            it('it should delete a user ', (done) => {
-                user.delete({id: userDB._id}, (err, doc) => {
-                    doc.should.be.a('object');
-                    doc.should.have.property('name').eql(userDB.name);
-                    doc.should.have.property('number').eql(userDB.number);
-                    doc.should.have.property('mail').eql(userDB.mail);
-                    done();
-                });
+        it('it should delete a user ', (done) => {
+            const userDB = users[0];
+            userService.delete({id: userDB._id}, (err, doc) => {
+                doc.should.be.a('object');
+                doc.should.have.property('name').eql(userDB.name);
+                doc.should.have.property('number').eql(userDB.number);
+                doc.should.have.property('mail').eql(userDB.mail);
+                done();
             });
         });
     });

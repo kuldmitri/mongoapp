@@ -15,3 +15,7 @@ exports.createUnprocessableEntityError = function (message) {
 exports.createNotFoundNumberError = function (number) {
     return httpError('Not Found number ' + number, 421);
 };
+
+exports.NotFoundId = function (id) {
+    return httpError('Id ' + id + 'not found', 423);
+};

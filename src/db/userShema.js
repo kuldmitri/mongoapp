@@ -1,13 +1,13 @@
-var mongoose = require('./mongoose');
-var logger = require('../libs/logger')(module);
-var Schema = mongoose.Schema;
+const mongoose = require('./mongoose');
+const logger = require('../libs/logger')(module);
+const Schema = mongoose.Schema;
 
-var User = new Schema({
-    number: {type: String, required: true},
+const User = new Schema({
+    number: {type: String, required: true, unique: true},
     name: {type: String, required: true},
     mail: {type: String, required: true},
 });
 
-var UserModel = mongoose.model('User', User);
+const UserModel = mongoose.model('User', User);
 
 module.exports.UserModel = UserModel;
