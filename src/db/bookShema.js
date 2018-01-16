@@ -9,18 +9,6 @@ const BookSchema = new Schema({
     issued: {type: String}
 });
 
-BookSchema.statics.findByNameAndAuthor = function (name, authorName, cb) {
-    const query = {
-        name: new RegExp(name, "i"),
-        author: new RegExp(authorName, "i")
-    };
-    return this.find(query, cb);
-};
-
-BookSchema.statics.returnBook = function (id, cb) {
-    return this.findByIdAndUpdate(id, {issued: null, issuedto: null}, {new: true}, cb);
-};
-
 const BookModel = mongoose.model('Book', BookSchema);
 
 module.exports.BookModel = BookModel;

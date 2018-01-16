@@ -25,11 +25,15 @@ exports.issueBook = (obj, cb) => {
 };
 
 exports.returnBook = (obj, cb) => {
-    BookModel.returnBook(obj.id, cb);
+    BookModel.findByIdAndUpdate(obj.id, {issued: null, issuedto: null}, {new: true}, cb);
 };
 
 exports.findByNameAndAuthor = (obj, cb) => {
-    BookModel.findByNameAndAuthor(obj.name, obj.author, cb);
+    const query = {
+        name: new RegExp(obj.name, "i"),
+        author: new RegExp(obj.author, "i")
+    };
+    BookModel.find(query, cb);
 };
 
 exports.addNewBook = (obj, cb) => {

@@ -8,15 +8,6 @@ const UserSchema = new Schema({
     mail: {type: String, required: true},
 });
 
-UserSchema.statics.findUser = function (obj, cb) {
-    const query = {
-        name: new RegExp(obj.name, "i"),
-        number: new RegExp(obj.number, "i"),
-        mail: new RegExp(obj.mail, "i"),
-    };
-    UserModel.find(query, cb);
-};
-
 const UserModel = mongoose.model('User', UserSchema);
 
-module.exports.UserModel = UserModel;
+exports.UserModel = UserModel;

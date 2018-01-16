@@ -1,4 +1,4 @@
-const UserModel = require('../db/userShema').UserModel;
+const {UserModel} = require('../db/userShema');
 
 exports.findAll = (cb) => {
     UserModel.find({},cb);
@@ -13,5 +13,10 @@ exports.deleteUser = (obj, cb) => {
 };
 
 exports.findUser = (obj, cb) => {
-    UserModel.findUser(obj, cb);
+    const query = {
+        name: new RegExp(obj.name, "i"),
+        number: new RegExp(obj.number, "i"),
+        mail: new RegExp(obj.mail, "i"),
+    };
+    UserModel.find(query, cb);
 };
