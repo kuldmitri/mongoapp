@@ -9,20 +9,20 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const app = require('../../app');
 const should = chai.should();
-const Book = require('../../src/db/bookShema.js').BookModel;
-const User = require('../../src/db/userShema.js').UserModel;
-const bookService = require('../../src/services/bookService.js');
-const userService = require('../../src/services/userService.js');
+const {BookModel} = require('../../src/db/bookShema');
+const {UserModel} = require('../../src/db/userShema');
+const bookService = require('../../src/services/bookService');
+const userService = require('../../src/services/userService');
 
 chai.use(chaiHttp);
 describe('Book Tests', () => {
     beforeEach('clear database', (done) => {
         async.parallel([
             (cb) => {
-                Book.remove({}, cb)
+                BookModel.remove({}, cb)
             },
             (cb) => {
-                User.remove({}, cb)
+                UserModel.remove({}, cb)
             }
         ], (err) => {
             should.not.exist(err);
@@ -39,25 +39,32 @@ describe('Book Tests', () => {
     });
 
     it('it should not create a book with an empty name', (done) => {
-        let obj = {
-            name: '',
-            author: 'petrow'
-        };
-        bookService.addNewBook(obj, (err, doc) => {
+        const obj = {
+            book: {
+                name: '',
+                author: chance.first() + ' ' + chance.last()
+            },
+            base: 'Mongo'
+        }
+        bookService.addNewBook(obj, (err) => {
             err.name.should.eql('ValidationError');
+            err.message.should.eql('Book validation failed: name: Path `name` is required.');
             done();
         });
     });
 
     it('it should create a book ', (done) => {
-        let obj = {
-            name: chance.sentence({words: 4}),
-            author: chance.first() + ' ' + chance.last()
-        };
+        const obj = {
+            book: {
+                name: chance.sentence({words: 4}),
+                author: chance.first() + ' ' + chance.last()
+            },
+            base: 'Mongo'
+        }
         bookService.addNewBook(obj, (err, doc) => {
             doc.should.be.a('object');
-            doc.should.have.property('name').eql(obj.name);
-            doc.should.have.property('author').eql(obj.author);
+            doc.should.have.property('name').eql(obj.book.name);
+            doc.should.have.property('author').eql(obj.book.author);
             done();
         });
     });
@@ -67,9 +74,12 @@ describe('Book Tests', () => {
         beforeEach('create several books', (done) => {
             async.timesSeries(3, (n, cb) => {
                 const obj = {
-                    name: chance.sentence({words: 4}),
-                    author: chance.first() + ' ' + chance.last()
-                };
+                    book: {
+                        name: chance.sentence({words: 4}),
+                        author: chance.first() + ' ' + chance.last()
+                    },
+                    base: 'Mongo'
+                }
                 bookService.addNewBook(obj, (err, result) => {
                     should.not.exist(err);
                     cb(null, JSON.parse(JSON.stringify(result._doc)));
@@ -82,41 +92,32 @@ describe('Book Tests', () => {
 
         it('it should GET books', (done) => {
             bookService.findAll((err, doc) => {
-                let arr = [doc[0]._doc, doc[1]._doc, doc[2]._doc];
-                arr[0]._id = arr[0]._id.toString();
-                arr[1]._id = arr[1]._id.toString();
-                arr[2]._id = arr[2]._id.toString();
-
                 should.not.exist(err);
                 doc.should.be.a('array');
                 doc.should.be.lengthOf(books.length);
-                (arr.sort()).should.eql(books.sort());
+                _.forEach(JSON.parse(JSON.stringify(doc)), (book) => {
+                    books.should.deep.include(_.omit(book, 'base'));
+                });
                 done();
             });
         });
 
         it('it should find books by name', (done) => {
             bookService.findByNameAndAuthor({name: books[0].name}, (err, doc) => {
-                let arr = [doc[0]._doc];
-                arr[0]._id = arr[0]._id.toString();
-
                 should.not.exist(err);
                 doc.should.be.a('array');
                 doc.should.be.lengthOf(1);
-                arr.should.eql([books[0]]);
+                _.omit(JSON.parse(JSON.stringify(doc[0])), 'base').should.eql(books[0]);
                 done();
             });
         });
 
         it('it should find books by author', (done) => {
             bookService.findByNameAndAuthor({author: books[1].author}, (err, doc) => {
-                let arr = [doc[0]._doc];
-                arr[0]._id = arr[0]._id.toString();
-
                 should.not.exist(err);
-                arr.should.be.a('array');
-                arr.should.be.lengthOf(1);
-                arr.should.eql([books[1]]);
+                doc.should.be.a('array');
+                doc.should.be.lengthOf(1);
+                _.omit(JSON.parse(JSON.stringify(doc[0])), 'base').should.eql(books[1]);
                 done();
             });
         });
@@ -129,7 +130,7 @@ describe('Book Tests', () => {
                 should.not.exist(err);
                 arr.should.be.a('array');
                 arr.should.be.lengthOf(1);
-                arr.should.eql([books[2]]);
+                _.omit(JSON.parse(JSON.stringify(doc[0])), 'base').should.eql(books[2]);
                 done();
             });
         });
@@ -150,7 +151,7 @@ describe('Book Tests', () => {
             });
 
             it('it should issue a book to user given the id', (done) => {
-                bookService.issueBook({id: books[0]._id, number: userDB.number}, (err, doc) => {
+                bookService.issueBook({id: books[0]._id, number: userDB.number, base: 'Mongo'}, (err, doc) => {
                     should.not.exist(err);
                     doc.should.be.a('object');
                     doc.should.have.property('issued');
@@ -161,14 +162,14 @@ describe('Book Tests', () => {
 
             describe('when a book is issued', () => {
                 beforeEach('issue a book', (done) => {
-                    bookService.issueBook({id: books[0]._id, number: userDB.number}, (err, doc) => {
+                    bookService.issueBook({id: books[0]._id, number: userDB.number, base: 'Mongo'}, (err) => {
                         should.not.exist(err);
                         done();
                     });
                 });
 
-                it('it should set a book as unissued', function (done) {
-                    bookService.returnBook({id: books[0]._id}, (err, doc) => {
+                it('it should set a book as unissued', (done) => {
+                    bookService.returnBook({id: books[0]._id, base: 'Mongo'}, (err, doc) => {
                         doc.should.be.a('object');
                         doc.should.have.property('issued').eql(null);
                         doc.should.have.property('issuedto').eql(null);

@@ -1,11 +1,18 @@
 require('dotenv').config();
 console.log('process.env.port = ' + process.env.port);
 console.log('process.env.urlMongodb = ' + process.env.urlMongodb);
+console.log('process.env.pathBookCSVdb = ' + process.env.pathBookCSVdb);
+const fs = require("fs");
+
 
 const express = require("express");
 
 const app = express();
 const logger = require('./src/libs/logger')(module);
+
+if (!fs.existsSync(process.env.pathBookCSVdb)){
+    fs.appendFileSync(process.env.pathBookCSVdb, '');
+}
 
 app.use('/books', require('./src/controllers/bookController'));
 app.use('/users', require('./src/controllers/userController'));

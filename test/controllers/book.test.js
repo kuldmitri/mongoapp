@@ -9,19 +9,19 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const app = require('../../app');
 const should = chai.should();
-const Book = require('../../src/db/bookShema.js').BookModel;
-const User = require('../../src/db/userShema.js').UserModel;
-const book = require('../../src/services/bookService.js');
+const {BookModel} = require('../../src/db/bookShema');
+const {UserModel} = require('../../src/db/userShema');
+const book = require('../../src/services/bookService');
 
 chai.use(chaiHttp);
 describe('Book Tests', () => {
     beforeEach('clear database', (done) => {
         async.parallel([
             (cb) => {
-                Book.remove({}, cb)
+                BookModel.remove({}, cb)
             },
             (cb) => {
-                User.remove({}, cb)
+                UserModel.remove({}, cb)
             }
         ], (err) => {
             should.not.exist(err);
@@ -41,13 +41,16 @@ describe('Book Tests', () => {
     });
 
     it('it should not create a book with an empty name', (done) => {
-        let book = {
-            name: '',
-            author: 'petrow'
+        const req = {
+            book: {
+                name: '',
+                author: 'petrow',
+            },
+            base: 'Mongo'
         };
         chai.request(app)
             .post('/books/add')
-            .send(book)
+            .send(req)
             .end((err, res) => {
                 res.should.have.status(422);
                 res.text.should.eql('Book validation failed: name: Path `name` is required.');
@@ -56,18 +59,21 @@ describe('Book Tests', () => {
     });
 
     it('it should create a book ', (done) => {
-        let book = {
-            name: chance.sentence({words: 4}),
-            author: chance.first() + ' ' + chance.last()
+        const req = {
+            book: {
+                name: chance.sentence({words: 4}),
+                author: chance.first() + ' ' + chance.last()
+            },
+            base: 'Mongo'
         };
         chai.request(app)
             .post('/books/add')
-            .send(book)
-            .end(function (err, res) {
+            .send(req)
+            .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object');
-                res.body.book.should.have.property('name').eql(book.name);
-                res.body.book.should.have.property('author').eql(book.author);
+                res.body.book.should.have.property('name').eql(req.book.name);
+                res.body.book.should.have.property('author').eql(req.book.author);
                 done();
             });
     });
@@ -76,7 +82,7 @@ describe('Book Tests', () => {
         let books;
         beforeEach('create several books', (done) => {
             async.timesSeries(3, (n, cb) => {
-                const book = new Book({
+                const book = new BookModel({
                     name: chance.sentence({words: 4}),
                     author: chance.first() + ' ' + chance.last()
                 });
@@ -98,7 +104,9 @@ describe('Book Tests', () => {
                     res.should.have.status(200);
                     res.body.should.be.a('array');
                     res.body.should.be.lengthOf(books.length);
-                    (res.body.sort()).should.eql(books.sort());
+                    _.forEach(res.body, (book) => {
+                        books.should.deep.include(_.omit(book, 'base'));
+                    });
                     done();
                 });
         });
@@ -112,7 +120,7 @@ describe('Book Tests', () => {
                     res.should.have.status(200);
                     res.body.should.be.a('array');
                     res.body.should.be.lengthOf(1);
-                    (res.body).should.eql([books[0]]);
+                    _.omit(res.body[0], 'base').should.eql(books[0]);
                     done();
                 });
         });
@@ -126,7 +134,7 @@ describe('Book Tests', () => {
                     res.should.have.status(200);
                     res.body.should.be.a('array');
                     res.body.should.be.lengthOf(1);
-                    (res.body).should.eql([books[1]]);
+                    _.omit(res.body[0], 'base').should.eql(books[1]);
                     done();
                 });
         });
@@ -140,7 +148,7 @@ describe('Book Tests', () => {
                     res.should.have.status(200);
                     res.body.should.be.a('array');
                     res.body.should.be.lengthOf(1);
-                    (res.body).should.eql([books[2]]);
+                    _.omit(res.body[0], 'base').should.eql(books[2]);
                     done();
                 });
         });
@@ -148,7 +156,7 @@ describe('Book Tests', () => {
         describe('when a user is created', () => {
             let user;
             beforeEach('create a user', (done) => {
-                const userModel = new User({
+                const userModel = new UserModel({
                     name: chance.first() + ' ' + chance.last(),
                     number: "1",
                     mail: chance.email()
@@ -163,7 +171,7 @@ describe('Book Tests', () => {
             it('it should issue a book to user given the id', (done) => {
                 chai.request(app)
                     .post('/books/issue')
-                    .send({id: books[0]._id, number: user.number})
+                    .send({id: books[0]._id, number: user.number, base: 'Mongo'})
                     .end((err, res) => {
                         should.not.exist(err);
                         res.should.have.status(200);
@@ -178,7 +186,7 @@ describe('Book Tests', () => {
                 beforeEach('issue a book', (done) => {
                     chai.request(app)
                         .post('/books/issue')
-                        .send({id: books[0]._id, number: user.number})
+                        .send({id: books[0]._id, number: user.number, base: 'Mongo'})
                         .end((err) => {
                             should.not.exist(err);
                             done();
@@ -188,7 +196,7 @@ describe('Book Tests', () => {
                 it('it should set a book as unissued', function (done) {
                     chai.request(app)
                         .post('/books/return')
-                        .send({id: books[0]._id})
+                        .send({id: books[0]._id, base: 'Mongo'})
                         .end(function (err, res) {
                             res.should.have.status(200);
                             res.body.should.be.a('object');

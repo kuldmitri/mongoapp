@@ -41,12 +41,31 @@ $("#searchBooks").click(function (e) {
     });
 });
 
-function issueBook(id, number) {
+
+$("#findAll").click(function (e) {
+    $.ajax({
+        url: "/books/all",
+        contentType: "application/json",
+        method: "GET",
+        success: function (books) {
+            data.books = books;
+            $('#search').html(template(data));
+            alert('request succes');
+        },
+        error: function (error) {
+            alert(error.responseText);
+        }
+    });
+});
+
+function issueBook(base, id, number) {
+    console.log(base);
     $.ajax({
         url: "/books/issue",
         contentType: "application/json",
         method: "POST",
         data: JSON.stringify({
+            base: base,
             id: id,
             number: number
         }),
@@ -59,12 +78,13 @@ function issueBook(id, number) {
     });
 }
 
-function returnBook(id) {
+function returnBook(base, id) {
     $.ajax({
         url: "books/return",
         contentType: "application/json",
         method: "POST",
         data: JSON.stringify({
+            base: base,
             id: id
         }),
         error: function (error) {
@@ -75,12 +95,13 @@ function returnBook(id) {
     });
 }
 
-function deleteBook(id) {
+function deleteBook(base, id) {
     $.ajax({
         url: "books/delete",
         contentType: "application/json",
         method: "POST",
         data: JSON.stringify({
+            base: base,
             id: id
         }),
         success: function (result) {
@@ -100,12 +121,16 @@ $("#cleanSearch").click(function (e) {
 });
 
 
-
-
 $("#Create").click(function (e) {
     const form = document.forms["findBooks"];
     const name = form.elements["bookName"].value;
     const author = form.elements["author"].value;
+    let base ='';
+    if (form.elements["MongoDB"].checked) {
+        base = 'Mongo'
+    } else {
+        base = 'CSV'
+    }
     (name) ? $("#nameValid").hide() : $("#nameValid").show();
     (author) ? $("#authorValid").hide() : $("#authorValid").show();
     if (!name || !author) return;
@@ -114,57 +139,42 @@ $("#Create").click(function (e) {
         contentType: "application/json",
         method: "POST",
         data: JSON.stringify({
-            name: name,
-            author: author
+            book: {
+                name: name,
+                author: author,
+            },
+            base: base
         }),
+        success: function (result) {
+            $('#searchBooks').triggerHandler('click');
+        },
         error: function (error) {
             alert(error.responseText);
         }
     });
-    $('#searchBooks').triggerHandler('click');
 });
-
-
-$("#addBooks").click(function (e) {
-    const form = document.forms["findBooks"];
-    const name = form.elements["bookName"].value;
-    const author = form.elements["author"].value;
-    (name) ? $("#nameValid").hide() : $("#nameValid").show();
-    (author) ? $("#authorValid").hide() : $("#authorValid").show();
-    if (!name || !author) return;
-    $.ajax({
-        url: "/books/add",
-        contentType: "application/json",
-        method: "POST",
-        data: JSON.stringify({
-            name: name,
-            author: author
-        }),
-        error: function (error) {
-            alert(error.responseText);
-        }
-    });
-    $('#searchBooks').triggerHandler('click');
-});
-
 
 $("body").on("click", ".issueLink", function () {
-    var id = this.id;
-    var number = prompt('Введите номер читательского билета абонента, которому будет выдана книга');
-    issueBook(id, number);
+    let id = this.id;
+    let base = this.title;
+    let number = prompt('Введите номер читательского билета абонента, которому будет выдана книга');
+    console.log(base, id, number);
+    issueBook(base, id, number);
     $('#searchBooks').triggerHandler('click');
 });
 
 $("body").on("click", ".returnLink", function () {
-    var id = this.id;
-    returnBook(id);
+    let base = this.title;
+    let id = this.id;
+    returnBook(base, id);
 });
 
 $("body").on("click", ".deleteLink", function () {
-    var id = this.id;
-    deleteBook(id);
+    let base = this.title;
+    let id = this.id;
+    deleteBook(base, id);
 });
 
-var data = {};
-var template = Handlebars.compile($('#template').html());
+let data = {};
+let template = Handlebars.compile($('#template').html());
 $('#searchBooks').triggerHandler('click');

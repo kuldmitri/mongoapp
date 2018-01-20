@@ -9,13 +9,13 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const app = require('../../app');
 const should = chai.should();
-const User = require('../../src/db/userShema.js').UserModel;
-const userService = require('../../src/services/userService.js');
+const {UserModel} = require('../../src/db/userShema');
+const userService = require('../../src/services/userService');
 
 chai.use(chaiHttp);
 describe('User Tests', () => {
     beforeEach('clear database', (done) => {
-        User.remove({}, (err) => {
+        UserModel.remove({}, (err) => {
             should.not.exist(err);
             done();
         });
@@ -59,7 +59,7 @@ describe('User Tests', () => {
         let users;
         beforeEach('create several users', (done) => {
             async.timesSeries(3, (n, cb) => {
-                const user = new User({
+                const user = new UserModel({
                     name: chance.first() + ' ' + chance.last(),
                     number: chance.integer().toString(),
                     mail: chance.email()

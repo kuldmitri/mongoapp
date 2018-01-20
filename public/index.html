@@ -40,6 +40,16 @@
                         <label style="display: none; color: red" id="authorValid" class="control-label">Введите автора
                             книги</label>
                     </div>
+                    <div class="form-group">
+                        <div>Место сохранения</div>
+
+                        <input type="radio" id="MongoDB" name="contact" value="email" checked>
+                        <label for="MongoDB">База данных MongoDB</label>
+
+                        <input type="radio" id="CSV" name="contact" value="phone">
+                        <label for="CSV">CSV файл</label>
+
+                    </div>
 
                 </form>
             </div>
@@ -88,6 +98,7 @@
                 <div class="col-md-4">
                     <button type="button" class="btn btn-primary" id="cleanSearch">Очистить</button>
                     <button type="button" class="btn btn-primary" id="searchBooks">Найти книги</button>
+                    <button type="button" class="btn btn-primary" id="findAll">Все книги</button>
                 </div>
             </form>
 
@@ -102,8 +113,10 @@
                         <thead>
                         <tr>
                             <th>№</th>
+                            <th>id</th>
                             <th>Название книги</th>
                             <th>Автор книги</th>
+                            <th>Сохранена в базе</th>
                             <th>Время выдачи</th>
                             <th>Выдана абоненту</th>
                             <th>Возможные действия</th>
@@ -112,18 +125,20 @@
                         {{#each books}}
                         <tr>
                             <td>{{@index}}</td>
+                            <td>{{this._id}}</td>
                             <td>"{{this.name}}"</td>
                             <td>{{this.author}}</td>
+                            <td>{{this.base}}</td>
                             {{#if this.issuedto}}
                             <td>{{this.issued}}</td>
                             <td>{{this.issuedto}}</td>
-                            <td><a class="returnLink" id={{this._id}}> Вернуть </a>
+                            <td><a class="returnLink" id={{this._id}} title={{this.base}}> Вернуть </a>
                                 {{else}}
                             <td></td>
                             <td></td>
-                            <td><a class="issueLink" id={{this._id}}> Выдать </a>
+                            <td><a class="issueLink" id={{this._id}} title={{this.base}}> Выдать </a>
                                 {{/if}}
-                                <a class="deleteLink" id={{this._id}}> Удалить </a></td>
+                                <a class="deleteLink" id={{this._id}} title={{this.base}}> Удалить </a></td>
                         </tr>
                         {{/each}}
                     </table>
