@@ -34,7 +34,7 @@ describe('User Tests', () => {
             name: '',
             author: 'petrow'
         };
-        userService.addUser(obj, (err, doc) => {
+        userService.addUser(obj, (err) => {
             err.name.should.eql('ValidationError');
             done();
         });
@@ -46,11 +46,11 @@ describe('User Tests', () => {
             number: chance.integer().toString(),
             mail: chance.email()
         };
-        userService.addUser(user, (err, doc) => {
-            doc.should.be.a('object');
-            doc.should.have.property('name').eql(user.name);
-            doc.should.have.property('number').eql(user.number);
-            doc.should.have.property('mail').eql(user.mail);
+        userService.addUser(user, (err, added) => {
+            added.should.be.a('object');
+            added.should.have.property('name').eql(user.name);
+            added.should.have.property('number').eql(user.number);
+            added.should.have.property('mail').eql(user.mail);
             done();
         })
     });
@@ -92,15 +92,13 @@ describe('User Tests', () => {
 
         it('it should GET users', (done) => {
             userService.findAll((err, doc) => {
-                let arr = [doc[0]._doc, doc[1]._doc, doc[2]._doc];
-                arr[0]._id = arr[0]._id.toString();
-                arr[1]._id = arr[1]._id.toString();
-                arr[2]._id = arr[2]._id.toString();
-
+                doc = JSON.parse(JSON.stringify(doc));
                 should.not.exist(err);
                 doc.should.be.a('array');
                 doc.should.be.lengthOf(users.length);
-                (arr.sort()).should.eql(users.sort());
+                _.forEach(JSON.parse(JSON.stringify(doc)), (user) => {
+                    users.should.deep.include(user);
+                });
                 done();
             });
         });

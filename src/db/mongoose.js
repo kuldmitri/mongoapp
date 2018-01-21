@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
-var logger = require('../libs/logger')(module);
+const mongoose = require('mongoose');
+const logger = require('../libs/logger')(module);
 
 mongoose.connect(process.env.urlMongodb);
-var db = mongoose.connection;
+const db = mongoose.connection;
 
 db.on('error', function (err) {
     logger.error('connection error:', err.message);

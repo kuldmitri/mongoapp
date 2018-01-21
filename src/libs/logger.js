@@ -1,7 +1,7 @@
-var winston = require('winston');
+const winston = require('winston');
 
 function getLogger(module) {
-    var path = module.filename.split('/').slice(-2).join('/');
+    const path = module.filename.split('/').slice(-2).join('/');
     return new winston.Logger({
         transports: [
             new winston.transports.Console({

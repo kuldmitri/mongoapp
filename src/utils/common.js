@@ -32,7 +32,7 @@ module.exports.updateById = (arr, id, obj) => {
 };
 
 module.exports.find = (arr, obj) => {
-    let filtered = _.filter(arr, (o) => {
+    return  _.filter(arr, (o) => {
         let isTrue = true;
         _.forIn(obj, (value, key) => {
             if (!obj[key].test(o[key])) {
@@ -41,5 +41,4 @@ module.exports.find = (arr, obj) => {
         });
         return isTrue
     });
-    return filtered
 };

@@ -1,6 +1,3 @@
-/**
- * Created by dmitr on 08.01.2018.
- */
 $("#All").click(function (e) {
     $.ajax({
         url: "/books",
@@ -15,7 +12,6 @@ $("#All").click(function (e) {
         }
     });
 });
-
 
 $("#searchBooks").click(function (e) {
     const form = document.forms["searchBar"];
@@ -41,7 +37,6 @@ $("#searchBooks").click(function (e) {
     });
 });
 
-
 $("#findAll").click(function (e) {
     $.ajax({
         url: "/books/all",
@@ -50,7 +45,6 @@ $("#findAll").click(function (e) {
         success: function (books) {
             data.books = books;
             $('#search').html(template(data));
-            alert('request succes');
         },
         error: function (error) {
             alert(error.responseText);
@@ -113,13 +107,11 @@ function deleteBook(base, id) {
     });
 }
 
-
 $("#cleanSearch").click(function (e) {
     const form = document.forms["searchBar"];
     form.elements["searchName"].value = '';
     form.elements["searchAuthor"].value = '';
 });
-
 
 $("#Create").click(function (e) {
     const form = document.forms["findBooks"];

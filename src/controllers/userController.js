@@ -1,33 +1,33 @@
 const router = require('express').Router();
-const userService = require('../services/userService.js');
+const userService = require('../services/userService');
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 
 router.get("/all", jsonParser, (req, res, next) => {
-    userService.findAll((err, doc) => {
+    userService.findAll((err, users) => {
         if (err) return next(err);
-        res.send(doc);
+        res.send(users);
     });
 });
 
 router.post("/add", jsonParser, (req, res, next) => {
-    userService.addUser(req.body, (err, doc) => {
+    userService.addUser(req.body, (err, user) => {
         if (err) return next(err);
-        res.send({user: doc});
+        res.send({user});
     });
 });
 
 router.post("/delete", jsonParser, (req, res, next) => {
-    userService.deleteUser(req.body, (err, doc) => {
+    userService.deleteUser(req.body, (err, user) => {
         if (err) return next(err);
-        res.send({user: doc});
+        res.send({user});
     });
 });
 
 router.post("/find", jsonParser, (req, res, next) => {
-    userService.findUser(req.body, (err, doc) => {
+    userService.findUser(req.body, (err, users) => {
         if (err) return next(err);
-        res.send(doc);
+        res.send(users);
     });
 });
 

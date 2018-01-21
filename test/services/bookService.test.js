@@ -45,7 +45,7 @@ describe('Book Tests', () => {
                 author: chance.first() + ' ' + chance.last()
             },
             base: 'Mongo'
-        }
+        };
         bookService.addNewBook(obj, (err) => {
             err.name.should.eql('ValidationError');
             err.message.should.eql('Book validation failed: name: Path `name` is required.');

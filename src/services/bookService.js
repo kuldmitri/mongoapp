@@ -46,21 +46,21 @@ exports.issueBook = (obj, cb) => {
     let date = new Date();
     date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 
-    UserModel.findOne({number: number}, (err, doc) => {
+    UserModel.findOne({number: number}, (err, user) => {
         if (err) return cb(err);
-        if (!doc) return cb(httpErrors.createNotFoundNumberError(number), null);
+        if (!user) return cb(httpErrors.createNotFoundNumberError(number), null);
         switch (base) {
             case 'Mongo':
-                BookModel.findByIdAndUpdate(id, {issued: date, issuedto: doc._id}, {new: true}, (err, book) => {
+                BookModel.findByIdAndUpdate(id, {issued: date, issuedto: user._id}, {new: true}, (err, book) => {
                     cb(err, book);
                 });
                 break;
             case 'CSV':
                 csv.parse(fs.readFileSync(process.env.pathBookCSVdb), {columns: true}, (err, arr) => {
-                    const book = dbInArr.updateById(arr, id, {issued: date, issuedto: doc._id});
-                    csv.stringify(arr, {header: true}, (err, doc) => {
+                    const book = dbInArr.updateById(arr, id, {issued: date, issuedto: user._id});
+                    csv.stringify(arr, {header: true}, (err, csvData) => {
                         if (err) return cb(err);
-                        fs.writeFile(process.env.pathBookCSVdb, doc, (err) => {
+                        fs.writeFile(process.env.pathBookCSVdb, csvData, (err) => {
                             if (err) return cb(err);
                             return cb(null, book);
                         })
@@ -80,8 +80,8 @@ exports.returnBook = (obj, cb) => {
             csv.parse(fs.readFileSync(process.env.pathBookCSVdb), {columns: true}, (err, arr) => {
                 if (err) return cb(err);
                 dbInArr.updateById(arr, obj.id, {issued: null, issuedto: null});
-                csv.stringify(arr, {header: true}, (err, doc) => {
-                    fs.writeFile(process.env.pathBookCSVdb, doc, (err) => {
+                csv.stringify(arr, {header: true}, (err, csvData) => {
+                    fs.writeFile(process.env.pathBookCSVdb, csvData, (err) => {
                         if (err) return cb(err);
                         return cb(null, arr);
                     })
@@ -160,7 +160,6 @@ exports.addNewBook = (obj, cb) => {
 
 
 exports.deleteBook = (obj, cb) => {
-
     switch (obj.base) {
         case 'Mongo':
             BookModel.findByIdAndRemove(obj.id, cb);
@@ -168,9 +167,9 @@ exports.deleteBook = (obj, cb) => {
         case 'CSV':
             csv.parse(fs.readFileSync(process.env.pathBookCSVdb), {columns: true}, (err, arr) => {
                 let book = dbInArr.deleteById(arr, obj.id);
-                csv.stringify(arr, {header: true}, (err, doc) => {
+                csv.stringify(arr, {header: true}, (err, csvData) => {
                     if (err) return cb(err);
-                    fs.writeFile(process.env.pathBookCSVdb, doc, (err) => {
+                    fs.writeFile(process.env.pathBookCSVdb, csvData, (err) => {
                         if (err) return cb(err);
                         return cb(null, book);
                     })
