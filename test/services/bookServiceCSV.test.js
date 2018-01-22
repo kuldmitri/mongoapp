@@ -13,6 +13,8 @@ const {BookModel} = require('../../src/db/bookShema');
 const {UserModel} = require('../../src/db/userShema');
 const bookService = require('../../src/services/bookService');
 const userService = require('../../src/services/userService');
+const csv = require('csv');
+const csvDatabase = require('../../src/db/csvDatabase');
 const fs = require("fs");
 
 chai.use(chaiHttp);
@@ -23,7 +25,7 @@ describe('Book Tests', () => {
                 fs.writeFile(process.env.pathBookCSVdb, '', cb)
             },
             (cb) => {
-                BookModel.remove({}, cb)
+                BookModel.remove({}, cb);
             },
             (cb) => {
                 UserModel.remove({}, cb)
@@ -42,29 +44,14 @@ describe('Book Tests', () => {
         });
     });
 
-    it('it should not create a book with an empty name', (done) => {
-        const obj = {
-            book: {
-                name: '',
-                author: chance.first() + ' ' + chance.last()
-            },
-            base: 'Mongo'
-        };
-        bookService.addNewBook(obj, (err) => {
-            err.name.should.eql('ValidationError');
-            err.message.should.eql('Book validation failed: name: Path `name` is required.');
-            done();
-        });
-    });
-
     it('it should create a book ', (done) => {
         const obj = {
             book: {
                 name: chance.sentence({words: 4}),
                 author: chance.first() + ' ' + chance.last()
             },
-            base: 'Mongo'
-        }
+            base: 'CSV'
+        };
         bookService.addNewBook(obj, (err, doc) => {
             doc.should.be.a('object');
             doc.should.have.property('name').eql(obj.book.name);
@@ -82,11 +69,11 @@ describe('Book Tests', () => {
                         name: chance.sentence({words: 4}),
                         author: chance.first() + ' ' + chance.last()
                     },
-                    base: 'Mongo'
-                }
+                    base: 'CSV'
+                };
                 bookService.addNewBook(obj, (err, result) => {
                     should.not.exist(err);
-                    cb(null, JSON.parse(JSON.stringify(result._doc)));
+                    cb(null, JSON.parse(JSON.stringify(result)));
                 });
             }, (err, booksDB) => {
                 books = booksDB;
@@ -97,11 +84,12 @@ describe('Book Tests', () => {
         it('it should GET books', (done) => {
             bookService.findAll((err, doc) => {
                 should.not.exist(err);
+                _.forEach(doc, (book, index) => {
+                    doc[index] = _.omit(book, 'base');
+                });
                 doc.should.be.a('array');
                 doc.should.be.lengthOf(books.length);
-                _.forEach(JSON.parse(JSON.stringify(doc)), (book) => {
-                    books.should.deep.include(_.omit(book, 'base'));
-                });
+                (doc.sort()).should.eql(books.sort());
                 done();
             });
         });
@@ -128,12 +116,10 @@ describe('Book Tests', () => {
 
         it('it should find books by name and author', (done) => {
             bookService.findByNameAndAuthor({name: books[2].name, author: books[2].author}, (err, doc) => {
-                let arr = [doc[0]._doc];
-                arr[0]._id = arr[0]._id.toString();
-
                 should.not.exist(err);
-                arr.should.be.a('array');
-                arr.should.be.lengthOf(1);
+                doc[0]._id = doc[0]._id.toString();
+                doc.should.be.a('array');
+                doc.should.be.lengthOf(1);
                 _.omit(JSON.parse(JSON.stringify(doc[0])), 'base').should.eql(books[2]);
                 done();
             });
@@ -155,7 +141,7 @@ describe('Book Tests', () => {
             });
 
             it('it should issue a book to user given the id', (done) => {
-                bookService.issueBook({id: books[0]._id, number: userDB.number, base: 'Mongo'}, (err, doc) => {
+                bookService.issueBook({id: books[0]._id, number: userDB.number, base: 'CSV'}, (err, doc) => {
                     should.not.exist(err);
                     doc.should.be.a('object');
                     doc.should.have.property('issued');
@@ -166,14 +152,14 @@ describe('Book Tests', () => {
 
             describe('when a book is issued', () => {
                 beforeEach('issue a book', (done) => {
-                    bookService.issueBook({id: books[0]._id, number: userDB.number, base: 'Mongo'}, (err) => {
+                    bookService.issueBook({id: books[0]._id, number: userDB.number, base: 'CSV'}, (err) => {
                         should.not.exist(err);
                         done();
                     });
                 });
 
                 it('it should set a book as unissued', (done) => {
-                    bookService.returnBook({id: books[0]._id, base: 'Mongo'}, (err, doc) => {
+                    bookService.returnBook({id: books[0]._id, base: 'CSV'}, (err, doc) => {
                         doc.should.be.a('object');
                         doc.should.have.property('issued').eql(null);
                         doc.should.have.property('issuedto').eql(null);

@@ -50,7 +50,7 @@ describe('Book Tests', () => {
                 name: '',
                 author: 'petrow',
             },
-            base: 'Mongo'
+            base: 'CSV'
         };
         chai.request(app)
             .post('/books/add')
@@ -68,7 +68,7 @@ describe('Book Tests', () => {
                 name: chance.sentence({words: 4}),
                 author: chance.first() + ' ' + chance.last()
             },
-            base: 'Mongo'
+            base: 'CSV'
         };
         chai.request(app)
             .post('/books/add')
@@ -200,7 +200,7 @@ describe('Book Tests', () => {
                 it('it should set a book as unissued', function (done) {
                     chai.request(app)
                         .post('/books/return')
-                        .send({id: books[0]._id, base: 'Mongo'})
+                        .send({id: books[0]._id, base: 'CSV'})
                         .end(function (err, res) {
                             res.should.have.status(200);
                             res.body.should.be.a('object');

@@ -3,10 +3,11 @@ const logger = require('../libs/logger')(module);
 const {BookModel} = require('../db/bookShema');
 const {UserModel} = require('../db/userShema');
 const csv = require('csv');
+const dbInArr = require('../utils/common');
 const httpErrors = require('../utils/httpErrors');
 const fs = require("fs");
-const dbInArr = require('../utils/common');
 const async = require('async');
+const csvDatabase = require('../db/csvDatabase');
 
 
 exports.findAll = (cb) => {
@@ -23,7 +24,7 @@ exports.findAll = (cb) => {
 
         },
         csv: (next) => {
-            csv.parse(fs.readFileSync(process.env.pathBookCSVdb), {columns: true}, (err, arr) => {
+            csvDatabase.find(process.env.pathBookCSVdb,{}, (err, arr) => {
                 if (err) return cb(err);
                 arr.map((current) => {
                     current.base = 'CSV';
@@ -51,21 +52,10 @@ exports.issueBook = (obj, cb) => {
         if (!user) return cb(httpErrors.createNotFoundNumberError(number), null);
         switch (base) {
             case 'Mongo':
-                BookModel.findByIdAndUpdate(id, {issued: date, issuedto: user._id}, {new: true}, (err, book) => {
-                    cb(err, book);
-                });
+                BookModel.findByIdAndUpdate(id, {issued: date, issuedto: user._id}, {new: true}, cb);
                 break;
             case 'CSV':
-                csv.parse(fs.readFileSync(process.env.pathBookCSVdb), {columns: true}, (err, arr) => {
-                    const book = dbInArr.updateById(arr, id, {issued: date, issuedto: user._id});
-                    csv.stringify(arr, {header: true}, (err, csvData) => {
-                        if (err) return cb(err);
-                        fs.writeFile(process.env.pathBookCSVdb, csvData, (err) => {
-                            if (err) return cb(err);
-                            return cb(null, book);
-                        })
-                    });
-                });
+                csvDatabase.updateById(process.env.pathBookCSVdb,id,{issued: date, issuedto: user._id},cb);
                 break;
         }
     });
@@ -77,16 +67,7 @@ exports.returnBook = (obj, cb) => {
             BookModel.findByIdAndUpdate(obj.id, {issued: null, issuedto: null}, {new: true}, cb);
             break;
         case 'CSV':
-            csv.parse(fs.readFileSync(process.env.pathBookCSVdb), {columns: true}, (err, arr) => {
-                if (err) return cb(err);
-                dbInArr.updateById(arr, obj.id, {issued: null, issuedto: null});
-                csv.stringify(arr, {header: true}, (err, csvData) => {
-                    fs.writeFile(process.env.pathBookCSVdb, csvData, (err) => {
-                        if (err) return cb(err);
-                        return cb(null, arr);
-                    })
-                })
-            });
+            csvDatabase.updateById(process.env.pathBookCSVdb,obj.id,{issued: null, issuedto: null},cb);
             break;
     }
 };
@@ -110,7 +91,7 @@ exports.findByNameAndAuthor = (obj, cb) => {
 
         },
         csv: (next) => {
-            csv.parse(fs.readFileSync(process.env.pathBookCSVdb), {columns: true}, (err, arr) => {
+            csvDatabase.find(process.env.pathBookCSVdb,query,(err, arr) => {
                 if (err) return next(err);
                 let arrCVS = dbInArr.find(arr, query);
                 arrCVS.map((current) => {
@@ -134,23 +115,7 @@ exports.addNewBook = (obj, cb) => {
             BookModel.create(obj.book, cb);
             break;
         case 'CSV':
-            let data;
-            try {
-                data = fs.readFileSync(process.env.pathBookCSVdb);
-            } catch (err) {
-                logger.error('[AddBook] Read csv file failed', err);
-                return cb(err);
-            }
-            csv.parse(data, {columns: true}, (err, arr) => {
-                if (err) return cb(err);
-                dbInArr.addNew(arr, obj.book);
-                csv.stringify(arr, {header: true}, (err, books) => {
-                    fs.writeFile(process.env.pathBookCSVdb, books, (err) => {
-                        if (err) return cb(err);
-                        return cb(null, arr);
-                    })
-                })
-            });
+            csvDatabase.addNew(process.env.pathBookCSVdb,obj.book,cb)
             break;
         default :
             logger.error('Unknown DB type')
@@ -165,16 +130,7 @@ exports.deleteBook = (obj, cb) => {
             BookModel.findByIdAndRemove(obj.id, cb);
             break;
         case 'CSV':
-            csv.parse(fs.readFileSync(process.env.pathBookCSVdb), {columns: true}, (err, arr) => {
-                let book = dbInArr.deleteById(arr, obj.id);
-                csv.stringify(arr, {header: true}, (err, csvData) => {
-                    if (err) return cb(err);
-                    fs.writeFile(process.env.pathBookCSVdb, csvData, (err) => {
-                        if (err) return cb(err);
-                        return cb(null, book);
-                    })
-                });
-            });
+            csvDatabase.deleteById(process.env.pathBookCSVdb,obj.id,cb);
             break;
     }
 };
