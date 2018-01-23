@@ -1,5 +1,4 @@
 require('dotenv').config({path: 'test.env'});
-
 const Chance = require('chance');
 const chance = new Chance();
 const _ = require('lodash');
@@ -10,7 +9,7 @@ const chaiHttp = require('chai-http');
 const app = require('../../app');
 const should = chai.should();
 const {UserModel} = require('../../src/db/userShema');
-const userService = require('../../src/services/userService');
+const {userService} = require('../../src/services');
 
 chai.use(chaiHttp);
 describe('User Tests', () => {

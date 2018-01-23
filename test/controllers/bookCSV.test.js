@@ -11,7 +11,6 @@ const app = require('../../app');
 const should = chai.should();
 const {BookModel} = require('../../src/db/bookShema');
 const {UserModel} = require('../../src/db/userShema');
-const book = require('../../src/services/bookService');
 const fs = require("fs");
 
 chai.use(chaiHttp);

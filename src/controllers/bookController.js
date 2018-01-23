@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const bookService = require('../services/bookService');
+const {bookService} = require('../services');
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 const httpError = require('../utils/httpErrors');
