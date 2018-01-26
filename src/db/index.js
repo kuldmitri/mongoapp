@@ -1,2 +1,2 @@
-module.exports.userShema=require('./userShema');
-module.exports.bookShema=require('./bookShema');
+module.exports.userShema = require('./userShema');
+module.exports.bookShema = require('./bookShema');

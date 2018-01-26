@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "pretest": "eslint .",
+    "pretest": "eslint --fix .",
     "test": "mocha",
     "test-with-coverage": "nyc --reporter=html --reporter=text mocha",
     "posttest": "nyc check-coverage --lines 79 --functions 56 --branches 34"
